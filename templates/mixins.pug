@@ -1,0 +1,18 @@
+mixin pagination
+    | {% if page_number_list %}
+    nav(aria-label='...')
+        ul.pagination
+            li.page-item
+                a.page-link(href='?page=1', page='1') &laquo;
+            | {% for page_number in page_number_list %}
+            | {% if page_obj.number == page_number %}
+            li.page-item.active
+                span.page-link {{ page_number }}
+            | {% else %}
+            li.page-item
+                a.page-link(href='?page={{ page_number }}', page='{{ page_number }}') {{ page_number }}
+            | {% endif %}
+            | {% endfor %}
+            li.page-item
+                a.page-link(href='?page={{ page_obj.paginator.num_pages }}', page='{{ page_obj.paginator.num_pages }}') &raquo;
+    | {% endif %}

@@ -1,0 +1,42 @@
+.navbar {
+  height: 80px;
+  background-color: $logo-color;
+  color: white;
+}
+.navbar-brand {
+  font-family: 'Love Ya Like A Sister', cursive;
+  img {
+    width: 50px;
+    height: 50px;
+  }
+}
+a.navbar-brand {
+  font-size: 30px;
+}
+a.nav-link {
+  color: #eaeaea !important;
+  &:hover {
+    color: white !important;
+  }
+}
+#content {
+  margin-top: 50px;
+  min-height: 1000px;
+}
+h1, h2 {
+  margin: 0 0 15px 0 !important;
+}
+.fa-check-circle {
+  color: green;
+}
+.fa-times-circle {
+  color: lightgrey;
+}
+footer > hr {
+  margin-top: 50px;
+}
+a {
+  &hover {
+    text-decoration: none !important;
+  }
+}

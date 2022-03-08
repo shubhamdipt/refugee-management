@@ -1,0 +1,32 @@
+| {% if success %}
+div.alert.alert-success.alert-dismissable.form-success(role="alert")
+    button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times
+    | {{ success }}
+| {% endif %}
+| {% if error %}
+div.alert.alert-danger.alert-dismissable.form-error(role="alert")
+    button.close(type="button" data-dismiss="alert" aria-label="Close")
+        span(aria-hidden="true") &times
+    | {{ error }}
+| {% endif %}
+nav.navbar.navbar-expand-lg.navbar-dark
+    a.navbar-brand.mb-0(href="/") Refugee Care
+    button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarText", aria-controls="navbarTogglerDemo02", aria-expanded="false", aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+    #navbarText.collapse.navbar-collapse
+        .navbar-nav
+            .nav-item
+                a.nav-link(href="{% url 'frontend:home' %}") Home
+        | {% if request.user.is_authenticated %}
+        | {% endif %}
+        .navbar-nav.ml-auto
+            | {% if request.user.is_authenticated %}
+            .nav-item
+                a.nav-link(href='/admin') Admin
+            .nav-item
+                a.nav-link(href='/logout') Logout
+            | {% else %}
+            .nav-item
+                a.nav-link(href='/login') Login
+            | {% endif %}

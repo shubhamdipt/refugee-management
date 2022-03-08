@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.secret_key
+local_manage.sh
+
+*.sql
+*.zip
+node_modules
+.sass-cache

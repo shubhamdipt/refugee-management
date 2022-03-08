@@ -1,0 +1,41 @@
+doctype html
+| {% load static crispy_forms_tags %}
+html(lang='en')
+
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+        link(rel='shortcut icon', href="{% static 'images/logo/favicon.ico' %}")
+        link(rel='apple-touch-icon', href="{% static 'images/logo/apple-icon.png' %}")
+
+        block title
+            title Refugee Management
+        block extra_head
+        block description
+
+        // CSS
+        link(rel="stylesheet" href="{% static 'css/styles.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/fontawesome/all.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}")
+
+
+        block canonical
+        block extra_css
+    body
+        block header
+            include ./layout/header.pug
+        #content
+            block content
+        include ./layout/footer.pug
+
+    // JS should be towards the end to avoid render-block for content
+    script(src="{% static 'js/vendor/jquery/jquery-3.6.0.min.js' %}")
+    script(src="{% static 'js/src/ajax_setup.js' %}")
+    script(src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}")
+    script(src="{% static 'js/vendor/bootstrap-select.min.js' %}")
+    script(src="{% static 'js/src/main.js' %}")
+
+    block modal
+    block extra_js
