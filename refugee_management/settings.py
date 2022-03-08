@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Libraries
     "crispy_forms",
     # Apps
+    "accounts",
     "frontend",
 ]
 
@@ -148,6 +149,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 """########################################################################
 #######                             Others                           #####
 ########################################################################"""
+
+AUTH_USER_MODEL = "accounts.AccountUser"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
