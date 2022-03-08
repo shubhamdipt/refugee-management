@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     # Apps
     "accounts",
     "frontend",
+    "volunteer",
+    "refugee",
 ]
 
 MIDDLEWARE = [
