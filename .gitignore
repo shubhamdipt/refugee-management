@@ -128,6 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+.idea
 .secret_key
 local_manage.sh
 
