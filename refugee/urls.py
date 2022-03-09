@@ -1,8 +1,8 @@
 from django.urls import path
 
-from refugee.views import profile
+from refugee.views import services
 
 app_name = "refugee"
 urlpatterns = [
-    path("profile", profile, name="profile"),
+    path("services", services, name="services"),
 ]

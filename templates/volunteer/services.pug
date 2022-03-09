@@ -17,25 +17,25 @@ block content
                             h5.mb-0
                                 button.btn.btn-outline-primary(data-toggle='collapse' data-target='#collapseOne' aria-expanded='true' aria-controls='collapseOne')
                                     | Transfer
-                        #collapseOne.collapse(aria-labelledby='serviceOne' data-parent='#accordion')
+                        #collapseOne.collapse.show(aria-labelledby='serviceOne' data-parent='#accordion')
                             .card-body
                                 h5 Create route
                                 .row
-                                form
+                                form(method="POST", action="{% url 'volunteer:add_transfer_service' %}")
                                     .col-sm-6
                                         | {% csrf_token %}
                                         .row
                                             .col-sm-12
                                                 .form-group
                                                     .input-group.date
-                                                        input.form-control.date-time-picker(type='text' name='datetime' placeholder='Enter pick up time')
+                                                        input.form-control.date-time-picker(type='text' name='transfer-datetime' placeholder='Enter pick up time' required)
                                                         .input-group-addon.input-group-append
                                                             .input-group-text
                                                                 i.glyphicon.glyphicon-calendar.fa.fa-calendar
                                         .row
                                             .col-sm-6
                                                 .form-group
-                                                    input.form-control(name="passengers", value="", type="number", placeholder="Number of passengers")
+                                                    input.form-control(name="transfer-refugees", value="", type="number", placeholder="Number of passengers" required)
                                         .row
                                             .col-sm-6
                                                 button#add-stop.btn.btn-sm.btn-outline-default
@@ -67,7 +67,7 @@ block extra_js
             var stop_number = stops_table.find('tr').length;
             $.get("/locations/cities")
                 .done(function (data){
-                    var html = "<select class='autocomplete-stops' name='stop-" + (stop_number + 1) + "'>";
+                    var html = "<select class='autocomplete-stops' name='transfer-stop-" + (stop_number + 1) + "'>";
                     for (var i = 0; i < data.results.length ; i++) {
                         html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
                     }

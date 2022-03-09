@@ -1,8 +1,9 @@
 from django.urls import path
 
-from volunteer.views import profile
+from volunteer.views import add_transfer_service, services
 
 app_name = "volunteer"
 urlpatterns = [
-    path("profile", profile, name="profile"),
+    path("services", services, name="services"),
+    path("add_transfer_service", add_transfer_service, name="add_transfer_service"),
 ]

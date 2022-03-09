@@ -27,7 +27,7 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <div class="navbar-nav">
           <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>{% if request.user.is_authenticated %}
-          <div class="nav-item"><a class="nav-link" href="/profile">Profile</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="/services">Services</a></div>{% endif %}
         </div>
         <div class="navbar-nav ml-auto">
           {% if request.user.is_authenticated %}

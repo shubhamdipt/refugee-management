@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render, reverse
 
 from accounts.forms import AccountUserCreationForm
@@ -22,12 +22,12 @@ def home(request):
 
 
 @login_required
-def profile(request):
+def services(request):
     if Volunteer.objects.filter(account_user=request.user).first():
-        return redirect(reverse("volunteer:profile"))
+        return redirect(reverse("volunteer:services"))
     elif Refugee.objects.filter(account_user=request.user).first():
-        return redirect(reverse("refugee:profile"))
-    return Http404
+        return redirect(reverse("refugee:services"))
+    return HttpResponseForbidden("Profile could not be found.")
 
 
 def data_privacy(request):

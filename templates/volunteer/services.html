@@ -27,7 +27,7 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <div class="navbar-nav">
           <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>{% if request.user.is_authenticated %}
-          <div class="nav-item"><a class="nav-link" href="/profile">Profile</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="/services">Services</a></div>{% endif %}
         </div>
         <div class="navbar-nav ml-auto">
           {% if request.user.is_authenticated %}
@@ -56,17 +56,17 @@
                     <button class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Transfer</button>
                   </h5>
                 </div>
-                <div class="collapse" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
+                <div class="collapse show" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
                   <div class="card-body">
                     <h5>Create route</h5>
                     <div class="row"></div>
-                    <form>
+                    <form method="POST" action="{% url 'volunteer:add_transfer_service' %}">
                       <div class="col-sm-6">{% csrf_token %}
                         <div class="row">
                           <div class="col-sm-12">
                             <div class="form-group">
                               <div class="input-group date">
-                                <input class="form-control date-time-picker" type="text" name="datetime" placeholder="Enter pick up time">
+                                <input class="form-control date-time-picker" type="text" name="transfer-datetime" placeholder="Enter pick up time" required>
                                 <div class="input-group-addon input-group-append">
                                   <div class="input-group-text"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
                                 </div>
@@ -77,7 +77,7 @@
                         <div class="row">
                           <div class="col-sm-6">
                             <div class="form-group">
-                              <input class="form-control" name="passengers" value="" type="number" placeholder="Number of passengers">
+                              <input class="form-control" name="transfer-refugees" value="" type="number" placeholder="Number of passengers" required>
                             </div>
                           </div>
                         </div>
@@ -174,7 +174,7 @@
         var stop_number = stops_table.find('tr').length;
         $.get("/locations/cities")
             .done(function (data){
-                var html = "<select class='autocomplete-stops' name='stop-" + (stop_number + 1) + "'>";
+                var html = "<select class='autocomplete-stops' name='transfer-stop-" + (stop_number + 1) + "'>";
                 for (var i = 0; i < data.results.length ; i++) {
                     html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
                 }
