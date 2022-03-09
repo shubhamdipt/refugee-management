@@ -1,4 +1,18 @@
 extends ./../layout.pug
 block content
     #home-container.container
-        h1 Welcome!
+        .row
+            .col-sm-12
+                | {% if request.user.is_authenticated %}
+                h1 Welcome {{ request.user.email }}
+                | {% else %}
+                h1 Welcome!
+                | {% endif %}
+        | {% if not request.user.is_authenticated %}
+        .row
+            .col-sm-6
+                form(method="POST")
+                    | {% csrf_token %}
+                    | {{ registration_form|crispy }}
+                    button.btn.btn-block.btn-outline-success(type="submit") Register
+        | {% endif %}

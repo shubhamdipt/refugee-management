@@ -26,10 +26,11 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <div class="navbar-nav">
           <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>
-        </div>{% if request.user.is_authenticated %}
-        {% endif %}
-        <div class="navbar-nav ml-auto">{% if request.user.is_authenticated %}
-          <div class="nav-item"><a class="nav-link" href="/admin">Admin</a></div>
+        </div>
+        <div class="navbar-nav ml-auto">
+          {% if request.user.is_authenticated %}
+          {% if request.user.is_staff %}
+          <div class="nav-item"><a class="nav-link" href="/admin">Admin</a></div>{% endif %}
           <div class="nav-item"><a class="nav-link" href="/logout">Logout</a></div>{% else %}
           <div class="nav-item"><a class="nav-link" href="/login">Login</a></div>{% endif %}
         </div>
@@ -107,7 +108,7 @@
             <h6 class="text-uppercase font-weight-bold mb-4">Services</h6>
             <ul class="list-unstyled mb-0">
               <li class="mb-2"><a class="text-muted" href="/login">Login</a></li>
-              <li class="mb-2"><a class="text-muted" href="/register">Register</a></li>
+              <li class="mb-2"><a class="text-muted" href="/">Register</a></li>
             </ul>
           </div>
           <div class="col-lg-2 col-md-6 mb-4 mb-lg-0"></div>

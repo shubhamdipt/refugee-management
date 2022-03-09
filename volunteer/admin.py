@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from volunteer.models import Volunteer
+
+
+@admin.register(Volunteer)
+class VolunteerAdmin(admin.ModelAdmin):
+    list_display = ("account_user",)
+    search_fields = ("account_user__email",)

@@ -39,7 +39,7 @@ class CustomUserManager(BaseUserManager):
 
 class AccountUser(AbstractUser):
     username = None
-    email = models.EmailField(_("email address"), unique=True)
+    email = models.EmailField(_("Email"), unique=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
