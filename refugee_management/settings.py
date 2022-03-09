@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # Apps
     "accounts",
     "frontend",
+    "locations",
     "volunteer",
     "refugee",
 ]
