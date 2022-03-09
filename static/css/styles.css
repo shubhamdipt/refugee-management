@@ -42,4 +42,8 @@ footer > hr {
 ahover {
   text-decoration: none !important; }
 
+.row {
+  margin-top: 5px;
+  margin-bottom: 5px; }
+
 /*# sourceMappingURL=styles.css.map */

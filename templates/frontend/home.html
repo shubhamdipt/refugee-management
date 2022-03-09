@@ -9,9 +9,10 @@
     <title>Refugee Management</title>
     <!-- CSS-->
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/fontawesome/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}">
   </head>
   <body>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
@@ -40,8 +41,9 @@
       <div class="container" id="home-container">
         <div class="row">
           <div class="col-sm-12">{% if request.user.is_authenticated %}
-            <h1>Welcome {{ request.user.email }}</h1>{% else %}
+            <h1>Welcome &nbsp;<span style="font-weight: normal; font-size: 20px; font-style: italic;">{{ request.user.email }}</span></h1>{% else %}
             <h1>Welcome!</h1>{% endif %}
+            <p>This is a refugee management service where volunteers can can provide help and support as well as refugees can connect with the volunteer services.</p>
           </div>
         </div>{% if not request.user.is_authenticated %}
         <div class="row">
@@ -51,6 +53,78 @@
               {{ registration_form|crispy }}
               <button class="btn btn-block btn-outline-success" type="submit">Register</button>
             </form>
+          </div>
+        </div>{% endif %}
+        {% if is_volunteer %}
+        <hr>
+        <div class="row">
+          <div class="col-sm-12">
+            <div id="accordion">
+              <div class="card" style="border: none;">
+                <div class="card-header" id="serviceOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Transfer</button>
+                  </h5>
+                </div>
+                <div class="collapse" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
+                  <div class="card-body">
+                    <h5>Create route</h5>
+                    <div class="row"></div>
+                    <form>
+                      <div class="col-sm-6">{% csrf_token %}
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="form-group">
+                              <div class="input-group date">
+                                <input class="form-control date-time-picker" type="text" name="datetime" placeholder="Enter pick up time">
+                                <div class="input-group-addon input-group-append">
+                                  <div class="input-group-text"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <input class="form-control" name="passengers" value="" type="number" placeholder="Number of passengers">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <button class="btn btn-sm btn-outline-default" id="add-stop">Add stop &nbsp;
+                              <div class="fa fa-plus"></div>
+                            </button>
+                          </div>
+                          <div class="col-sm-6">
+                            <button class="btn btn-sm btn-outline-default" id="reset">Reset</button>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <table class="table table-sm" id="stops-table"></table>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <button class="btn btn-dark btn-block" type="submit">Add transfer</button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!--.card-->
+              <!--    #serviceTwo.card-header-->
+              <!--        h5.mb-0-->
+              <!--            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')-->
+              <!--                | Hosting-->
+              <!--    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')-->
+              <!--        .card-body-->
+              <!--            | To be implemented-->
+            </div>
           </div>
         </div>{% endif %}
       </div>
@@ -88,8 +162,46 @@
   </body>
   <!-- JS should be towards the end to avoid render-block for content-->
   <script src="{% static 'js/vendor/jquery/jquery-3.6.0.min.js' %}"></script>
-  <script src="{% static 'js/src/ajax_setup.js' %}"></script>
+  <script src="{% static 'js/vendor/popper.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
+  <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/select2.min.js' %}"></script>
+  <script src="{% static 'js/src/ajax_setup.js' %}"></script>
   <script src="{% static 'js/src/main.js' %}"></script>
+  <script>
+    $('.date-time-picker').datetimepicker({
+      "allowInputToggle": true,
+      "showClose": true,
+      "showClear": true,
+      "showTodayButton": true,
+      "format": "DD/MM/YYYY HH:mm",
+    });
+  </script>
+  <script>
+    var stops_table = $("#stops-table");
+    function add_stops() {
+        var stop_number = stops_table.find('tr').length;
+        $.get("/locations/cities")
+            .done(function (data){
+                var html = "<select class='autocomplete-stops' name='stop-" + (stop_number + 1) + "'>";
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
+                }
+                html += "</select>";
+                stops_table.append("<tr><td>#" + (stop_number+1) + "</td><td>" + html + "</td></tr>");
+            })
+            .always(function () {
+                $('.autocomplete-stops').select2();
+            });
+    }
+    $("#add-stop").click(function (e){
+        e.preventDefault();
+        add_stops();
+    })
+    $("#reset").click(function (e) {
+        e.preventDefault();
+        stops_table.html('');
+    })
+  </script>
 </html>

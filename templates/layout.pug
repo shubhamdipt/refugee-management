@@ -16,9 +16,10 @@ html(lang='en')
 
         // CSS
         link(rel="stylesheet" href="{% static 'css/styles.min.css' %}")
-        link(rel="stylesheet" href="{% static 'css/vendor/fontawesome/all.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}")
         link(rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}")
-        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}")
 
 
         block canonical
@@ -32,10 +33,20 @@ html(lang='en')
 
     // JS should be towards the end to avoid render-block for content
     script(src="{% static 'js/vendor/jquery/jquery-3.6.0.min.js' %}")
-    script(src="{% static 'js/src/ajax_setup.js' %}")
+    script(src="{% static 'js/vendor/popper.min.js' %}")
     script(src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}")
-    script(src="{% static 'js/vendor/bootstrap-select.min.js' %}")
+    script(src="{% static 'js/vendor/moment-with-locales.min.js' %}")
+    script(src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}")
+    script(src="{% static 'js/vendor/select2.min.js' %}")
+    script(src="{% static 'js/src/ajax_setup.js' %}")
     script(src="{% static 'js/src/main.js' %}")
-
+    script.
+        $('.date-time-picker').datetimepicker({
+          "allowInputToggle": true,
+          "showClose": true,
+          "showClear": true,
+          "showTodayButton": true,
+          "format": "DD/MM/YYYY HH:mm",
+        });
     block modal
     block extra_js
