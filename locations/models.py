@@ -21,3 +21,6 @@ class City(models.Model):
         verbose_name = _("City")
         verbose_name_plural = _("Cities")
         unique_together = ("name", "country")
+
+    def __str__(self):
+        return f"{self.name}, {self.country.name}"
