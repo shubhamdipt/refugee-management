@@ -18,6 +18,10 @@ nav.navbar.navbar-expand-lg.navbar-dark
         .navbar-nav
             .nav-item
                 a.nav-link(href="{% url 'frontend:home' %}") Home
+            | {% if request.user.is_authenticated %}
+            .nav-item
+                a.nav-link(href='/profile') Profile
+            | {% endif %}
         .navbar-nav.ml-auto
             | {% if request.user.is_authenticated %}
             | {% if request.user.is_staff %}

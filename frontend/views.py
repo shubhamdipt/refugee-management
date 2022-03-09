@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.shortcuts import redirect, render, reverse
 
 from accounts.forms import AccountUserCreationForm
 from refugee.models import Refugee
@@ -9,9 +11,6 @@ def home(request):
     """View for the home page."""
     ctx = {}
     form = AccountUserCreationForm()
-    if request.user.is_authenticated:
-        ctx["is_volunteer"] = Volunteer.objects.filter(account_user=request.user).first()
-        ctx["is_refugee"] = Refugee.objects.filter(account_user=request.user).first()
     if request.method == "POST":
         form = AccountUserCreationForm(request.POST)
         if form.is_valid():
@@ -20,6 +19,15 @@ def home(request):
             form = AccountUserCreationForm()
     ctx["registration_form"] = form
     return render(request, "frontend/home.html", ctx)
+
+
+@login_required
+def profile(request):
+    if Volunteer.objects.filter(account_user=request.user).first():
+        return redirect(reverse("volunteer:profile"))
+    elif Refugee.objects.filter(account_user=request.user).first():
+        return redirect(reverse("refugee:profile"))
+    return Http404
 
 
 def data_privacy(request):

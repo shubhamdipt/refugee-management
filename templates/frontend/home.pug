@@ -3,14 +3,8 @@ block content
     #home-container.container
         .row
             .col-sm-12
-                | {% if request.user.is_authenticated %}
-                h1
-                    | Welcome &nbsp;
-                    span(style="font-weight: normal; font-size: 20px; font-style: italic;") {{ request.user.email }}
-                | {% else %}
-                h1 Welcome!
-                | {% endif %}
-                p This is a refugee management service where volunteers can can provide help and support as well as refugees can connect with the volunteer services.
+                h1 Refugee Management Service
+                p A management service dedicated to refugees where volunteers can can provide help and support as well as refugees can connect with the volunteer services.
         | {% if not request.user.is_authenticated %}
         .row
             .col-sm-6
@@ -19,83 +13,3 @@ block content
                     | {{ registration_form|crispy }}
                     button.btn.btn-block.btn-outline-success(type="submit") Register
         | {% endif %}
-        | {% if is_volunteer %}
-        hr
-        .row
-            .col-sm-12
-                #accordion
-                    .card(style="border: none;")
-                        #serviceOne.card-header
-                            h5.mb-0
-                                button.btn.btn-outline-primary(data-toggle='collapse' data-target='#collapseOne' aria-expanded='true' aria-controls='collapseOne')
-                                    | Transfer
-                        #collapseOne.collapse(aria-labelledby='serviceOne' data-parent='#accordion')
-                            .card-body
-                                h5 Create route
-                                .row
-                                form
-                                    .col-sm-6
-                                        | {% csrf_token %}
-                                        .row
-                                            .col-sm-12
-                                                .form-group
-                                                    .input-group.date
-                                                        input.form-control.date-time-picker(type='text' name='datetime' placeholder='Enter pick up time')
-                                                        .input-group-addon.input-group-append
-                                                            .input-group-text
-                                                                i.glyphicon.glyphicon-calendar.fa.fa-calendar
-                                        .row
-                                            .col-sm-6
-                                                .form-group
-                                                    input.form-control(name="passengers", value="", type="number", placeholder="Number of passengers")
-                                        .row
-                                            .col-sm-6
-                                                button#add-stop.btn.btn-sm.btn-outline-default
-                                                    | Add stop &nbsp;
-                                                    .fa.fa-plus
-                                            .col-sm-6
-                                                button#reset.btn.btn-sm.btn-outline-default
-                                                    | Reset
-                                        .row
-                                            .col-sm-12
-                                                table#stops-table.table.table-sm
-                                        .row
-                                            .col-sm-12
-                                                button.btn.btn-dark.btn-block(type="submit") Add transfer
-
-                    //.card
-                    //    #serviceTwo.card-header
-                    //        h5.mb-0
-                    //            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')
-                    //                | Hosting
-                    //    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')
-                    //        .card-body
-                    //            | To be implemented
-        | {% endif %}
-
-block extra_js
-    script.
-        var stops_table = $("#stops-table");
-        function add_stops() {
-            var stop_number = stops_table.find('tr').length;
-            $.get("/locations/cities")
-                .done(function (data){
-                    var html = "<select class='autocomplete-stops' name='stop-" + (stop_number + 1) + "'>";
-                    for (var i = 0; i < data.results.length ; i++) {
-                        html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
-                    }
-                    html += "</select>";
-                    stops_table.append("<tr><td>#" + (stop_number+1) + "</td><td>" + html + "</td></tr>");
-                })
-                .always(function () {
-                    $('.autocomplete-stops').select2();
-                });
-        }
-        $("#add-stop").click(function (e){
-            e.preventDefault();
-            add_stops();
-        })
-        $("#reset").click(function (e) {
-            e.preventDefault();
-            stops_table.html('');
-        })

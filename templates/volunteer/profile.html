@@ -13,15 +13,6 @@
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}">
-    <style>
-      .alert {
-          position: relative !important;
-          margin: 0 0 20px 0;
-      }
-      #formResult {
-          display: none;
-      }
-    </style>
   </head>
   <body>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
@@ -51,16 +42,79 @@
       <div class="container">
         <div class="row">
           <div class="col-sm-12">
-            <h1>Login</h1>
+            <h1>Welcome &nbsp;<span style="font-weight: normal; font-size: 20px; font-style: italic;">{{ request.user.email }} &nbsp;</span><span style="font-weight: bold; font-size: 15px; color:darkgreen;">(VOLUNTEER)</span></h1>
+            <p>Please select the appropriate service below.</p>
           </div>
         </div>
+        <hr>
         <div class="row">
-          <div class="col-sm-6">
-            <form method="POST">
-              {% csrf_token %}
-              {{ form|crispy }}
-              <button class="btn btn-success" type="submit">Submit</button>
-            </form>
+          <div class="col-sm-12">
+            <div id="accordion">
+              <div class="card" style="border: none;">
+                <div class="card-header" id="serviceOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-outline-primary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Transfer</button>
+                  </h5>
+                </div>
+                <div class="collapse" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
+                  <div class="card-body">
+                    <h5>Create route</h5>
+                    <div class="row"></div>
+                    <form>
+                      <div class="col-sm-6">{% csrf_token %}
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="form-group">
+                              <div class="input-group date">
+                                <input class="form-control date-time-picker" type="text" name="datetime" placeholder="Enter pick up time">
+                                <div class="input-group-addon input-group-append">
+                                  <div class="input-group-text"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <input class="form-control" name="passengers" value="" type="number" placeholder="Number of passengers">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <button class="btn btn-sm btn-outline-default" id="add-stop">Add stop &nbsp;
+                              <div class="fa fa-plus"></div>
+                            </button>
+                          </div>
+                          <div class="col-sm-6">
+                            <button class="btn btn-sm btn-outline-default" id="reset">Reset</button>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <table class="table table-sm" id="stops-table"></table>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <button class="btn btn-dark btn-block" type="submit">Add transfer</button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!--.card-->
+              <!--    #serviceTwo.card-header-->
+              <!--        h5.mb-0-->
+              <!--            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')-->
+              <!--                | Hosting-->
+              <!--    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')-->
+              <!--        .card-body-->
+              <!--            | To be implemented-->
+            </div>
           </div>
         </div>
       </div>
@@ -113,5 +167,31 @@
       "showTodayButton": true,
       "format": "DD/MM/YYYY HH:mm",
     });
+  </script>
+  <script>
+    var stops_table = $("#stops-table");
+    function add_stops() {
+        var stop_number = stops_table.find('tr').length;
+        $.get("/locations/cities")
+            .done(function (data){
+                var html = "<select class='autocomplete-stops' name='stop-" + (stop_number + 1) + "'>";
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
+                }
+                html += "</select>";
+                stops_table.append("<tr><td>#" + (stop_number+1) + "</td><td>" + html + "</td></tr>");
+            })
+            .always(function () {
+                $('.autocomplete-stops').select2();
+            });
+    }
+    $("#add-stop").click(function (e){
+        e.preventDefault();
+        add_stops();
+    })
+    $("#reset").click(function (e) {
+        e.preventDefault();
+        stops_table.html('');
+    })
   </script>
 </html>
