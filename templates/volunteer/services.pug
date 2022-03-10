@@ -19,37 +19,63 @@ block content
                                     | Transfer
                         #collapseOne.collapse.show(aria-labelledby='serviceOne' data-parent='#accordion')
                             .card-body
-                                h5 Create route
-                                .row
-                                form(method="POST", action="{% url 'volunteer:add_transfer_service' %}")
-                                    .col-sm-6
-                                        | {% csrf_token %}
-                                        .row
-                                            .col-sm-12
-                                                .form-group
-                                                    .input-group.date
-                                                        input.form-control.date-time-picker(type='text' name='transfer-datetime' placeholder='Enter pick up time' required)
-                                                        .input-group-addon.input-group-append
-                                                            .input-group-text
-                                                                i.glyphicon.glyphicon-calendar.fa.fa-calendar
+                                div(style="width: 100%;")
+                                    h5 Create route
+                                    form(method="POST", action="{% url 'volunteer:add_transfer_service' %}")
                                         .row
                                             .col-sm-6
-                                                .form-group
-                                                    input.form-control(name="transfer-refugees", value="", type="number", placeholder="Number of passengers" required)
-                                        .row
-                                            .col-sm-6
-                                                button#add-stop.btn.btn-sm.btn-outline-default
-                                                    | Add stop &nbsp;
-                                                    .fa.fa-plus
-                                            .col-sm-6
-                                                button#reset.btn.btn-sm.btn-outline-default
-                                                    | Reset
-                                        .row
-                                            .col-sm-12
-                                                table#stops-table.table.table-sm
-                                        .row
-                                            .col-sm-12
-                                                button.btn.btn-dark.btn-block(type="submit") Add transfer
+                                                | {% csrf_token %}
+                                                .row
+                                                    .col-sm-12
+                                                        .form-group
+                                                            .input-group.date
+                                                                input.form-control.date-time-picker(type='text' name='transfer-datetime' placeholder='Enter pick up time' required)
+                                                                .input-group-addon.input-group-append
+                                                                    .input-group-text
+                                                                        i.glyphicon.glyphicon-calendar.fa.fa-calendar
+                                                .row
+                                                    .col-sm-6
+                                                        .form-group
+                                                            input.form-control(name="transfer-refugees", value="", type="number", placeholder="Number of passengers" required)
+                                                .row
+                                                    .col-sm-6
+                                                        button#add-stop.btn.btn-sm.btn-outline-default
+                                                            | Add stop &nbsp;
+                                                            .fa.fa-plus
+                                                    .col-sm-6
+                                                        button#reset.btn.btn-sm.btn-outline-default
+                                                            | Reset
+                                                .row
+                                                    .col-sm-12
+                                                        table#stops-table.table.table-sm
+                                                .row
+                                                    .col-sm-12
+                                                        button.btn.btn-dark.btn-block(type="submit") Add transfer
+                                hr
+                                div(style="width: 100%; margin: 10px 0 10px 0;")
+                                    h5 My transfers
+                                    table.table.table-sm.table-bordered
+                                        thead
+                                            tr
+                                                th Pick up time
+                                                th Number of seats
+                                                th Route
+                                                th Status
+                                                th
+                                        | {% for transfer in transfers %}
+                                        tr
+                                            td {{ transfer.pick_up_time }}
+                                            td {{ transfer.total_seats }}
+                                            td {{ transfer.stopovers_text }}
+                                            td
+                                                | {% if transfer.active %}
+                                                .fa.fa-check-circle
+                                                | {% else %}
+                                                .fa.fa-times-circle
+                                                | {% endif %}
+                                            th
+                                                a.delete-confirmation(href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}", data-confirm="Are you sure you want to delete?") Delete
+                                        | {% endfor %}
 
                     //.card
                     //    #serviceTwo.card-header
@@ -59,6 +85,7 @@ block content
                     //    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')
                     //        .card-body
                     //            | To be implemented
+
 
 block extra_js
     script.

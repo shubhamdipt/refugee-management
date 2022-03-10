@@ -58,51 +58,79 @@
                 </div>
                 <div class="collapse show" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
                   <div class="card-body">
-                    <h5>Create route</h5>
-                    <div class="row"></div>
-                    <form method="POST" action="{% url 'volunteer:add_transfer_service' %}">
-                      <div class="col-sm-6">{% csrf_token %}
+                    <div style="width: 100%;">
+                      <h5>Create route</h5>
+                      <form method="POST" action="{% url 'volunteer:add_transfer_service' %}">
                         <div class="row">
-                          <div class="col-sm-12">
-                            <div class="form-group">
-                              <div class="input-group date">
-                                <input class="form-control date-time-picker" type="text" name="transfer-datetime" placeholder="Enter pick up time" required>
-                                <div class="input-group-addon input-group-append">
-                                  <div class="input-group-text"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
+                          <div class="col-sm-6">{% csrf_token %}
+                            <div class="row">
+                              <div class="col-sm-12">
+                                <div class="form-group">
+                                  <div class="input-group date">
+                                    <input class="form-control date-time-picker" type="text" name="transfer-datetime" placeholder="Enter pick up time" required>
+                                    <div class="input-group-addon input-group-append">
+                                      <div class="input-group-text"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></div>
+                                    </div>
+                                  </div>
                                 </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-6">
+                                <div class="form-group">
+                                  <input class="form-control" name="transfer-refugees" value="" type="number" placeholder="Number of passengers" required>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-6">
+                                <button class="btn btn-sm btn-outline-default" id="add-stop">Add stop &nbsp;
+                                  <div class="fa fa-plus"></div>
+                                </button>
+                              </div>
+                              <div class="col-sm-6">
+                                <button class="btn btn-sm btn-outline-default" id="reset">Reset</button>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-12">
+                                <table class="table table-sm" id="stops-table"></table>
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-12">
+                                <button class="btn btn-dark btn-block" type="submit">Add transfer</button>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div class="row">
-                          <div class="col-sm-6">
-                            <div class="form-group">
-                              <input class="form-control" name="transfer-refugees" value="" type="number" placeholder="Number of passengers" required>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-sm-6">
-                            <button class="btn btn-sm btn-outline-default" id="add-stop">Add stop &nbsp;
-                              <div class="fa fa-plus"></div>
-                            </button>
-                          </div>
-                          <div class="col-sm-6">
-                            <button class="btn btn-sm btn-outline-default" id="reset">Reset</button>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-sm-12">
-                            <table class="table table-sm" id="stops-table"></table>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-sm-12">
-                            <button class="btn btn-dark btn-block" type="submit">Add transfer</button>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
+                      </form>
+                    </div>
+                    <hr>
+                    <div style="width: 100%; margin: 10px 0 10px 0;">
+                      <h5>My transfers</h5>
+                      <table class="table table-sm table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Pick up time</th>
+                            <th>Number of seats</th>
+                            <th>Route</th>
+                            <th>Status</th>
+                            <th></th>
+                          </tr>
+                        </thead>{% for transfer in transfers %}
+                        <tr>
+                          <td>{{ transfer.pick_up_time }}</td>
+                          <td>{{ transfer.total_seats }}</td>
+                          <td>{{ transfer.stopovers_text }}</td>
+                          <td>{% if transfer.active %}
+                            <div class="fa fa-check-circle"></div>{% else %}
+                            <div class="fa fa-times-circle"></div>{% endif %}
+                          </td>
+                          <th><a class="delete-confirmation" href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">Delete</a></th>
+                        </tr>{% endfor %}
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

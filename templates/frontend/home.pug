@@ -13,3 +13,23 @@ block content
                     | {{ registration_form|crispy }}
                     button.btn.btn-block.btn-outline-success(type="submit") Register
         | {% endif %}
+        hr
+        .row
+            .col-sm-12
+                h3 Transfers
+                table.table.table-sm.table-bordered
+                    thead
+                        tr
+                            th Pick up time
+                            th Number of seats
+                            th Route
+                            th
+                    | {% for transfer in transfers %}
+                    tr
+                        td {{ transfer.pick_up_time }}
+                        td {{ transfer.total_seats }}
+                        td {{ transfer.stopovers_text }}
+                        th
+                            a.delete-confirmation(href="{% url 'refugee:reserve_transfer_service' transfer_id=transfer.id %}", data-confirm="Are you sure you want to reserve?")
+                                button.btn.btn-sm.btn-outline-success Reserve
+                    | {% endfor %}

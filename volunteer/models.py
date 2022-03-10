@@ -23,7 +23,9 @@ class Volunteer(models.Model):
 
 # Services
 class TransferService(CreateUpdateModel):
-    volunteer = models.ForeignKey(Volunteer, verbose_name=Volunteer, on_delete=models.SET_NULL, null=True, blank=True)
+    volunteer = models.ForeignKey(
+        Volunteer, verbose_name=_("Volunteer"), on_delete=models.SET_NULL, null=True, blank=True
+    )
     pick_up_time = models.DateTimeField(_("Pick up time"))
     total_seats = models.IntegerField("Total seats", validators=[MinValueValidator(1), MaxValueValidator(1000)])
     active = models.BooleanField(_("Active"), default=True)
@@ -35,16 +37,24 @@ class TransferService(CreateUpdateModel):
     def __str__(self):
         return f"{self.pick_up_time}: {self.volunteer}"
 
+    @property
+    def stopovers(self):
+        return TransferRouteCities.objects.filter(transfer=self).order_by("route_order")
+
+    @property
+    def stopovers_text(self):
+        return " -> ".join([str(i.city) for i in self.stopovers])
+
 
 class TransferRouteCities(models.Model):
-    transfer_id = models.ForeignKey(TransferService, verbose_name=_("Transfer ID"), on_delete=models.CASCADE)
+    transfer = models.ForeignKey(TransferService, verbose_name=_("Transfer ID"), on_delete=models.CASCADE)
     city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE)
     route_order = models.IntegerField("Order", validators=[MinValueValidator(1), MaxValueValidator(100)])
 
     class Meta:
         verbose_name = _("Transfer Route Cities")
         verbose_name_plural = _("Transfer Route Cities")
-        unique_together = ("transfer_id", "city")
+        unique_together = ("transfer", "city")
 
     def __str__(self):
         return f"{self.transfer_id}: {self.city} ({self.route_order})"

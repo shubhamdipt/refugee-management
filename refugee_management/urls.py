@@ -28,10 +28,10 @@ sitemaps = {
 urlpatterns = [
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
-    path("admin/", admin.site.urls),
-    path("", include("frontend.urls")),
     path("login", LoginView.as_view(template_name="accounts/login.html"), name="login"),
     path("logout", LogoutView.as_view(next_page="/login"), name="logout"),
+    path("admin/", admin.site.urls),
+    path("", include("frontend.urls")),
     path("locations/", include("locations.urls")),
     path("refugee/", include("refugee.urls")),
     path("volunteer/", include("volunteer.urls")),

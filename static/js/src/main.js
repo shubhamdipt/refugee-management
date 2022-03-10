@@ -1,0 +1,1 @@
+$(function(){$(document).on("click",".delete-confirmation",function(t){t.preventDefault(),confirm(this.getAttribute("data-confirm"))&&(window.location.href=this.getAttribute("href"))})});

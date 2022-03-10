@@ -19,3 +19,9 @@ block content
                     | {% csrf_token %}
                     | {{ form|crispy }}
                     button.btn.btn-success(type="submit") Submit
+        .row
+            .col-sm-6
+                p.help-block
+                    | Are you a new user? &nbsp;
+                    span
+                        a(href="{% url 'frontend:home' %}") Register

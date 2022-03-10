@@ -39,43 +39,19 @@
       </div>
     </nav>
     <div id="content">
-      <div class="container" id="home-container">
+      <div class="container">
         <div class="row">
           <div class="col-sm-12">
-            <h1>Refugee Management Service</h1>
-            <p>A management service dedicated to refugees where volunteers can can provide help and support as well as refugees can connect with the volunteer services.</p>
+            <h1>Make transfer reservation</h1>
           </div>
-        </div>{% if not request.user.is_authenticated %}
+        </div>
         <div class="row">
           <div class="col-sm-6">
             <form method="POST">
               {% csrf_token %}
-              {{ registration_form|crispy }}
-              <button class="btn btn-block btn-outline-success" type="submit">Register</button>
+              {{ form|crispy }}
+              <button class="btn btn-dark btn-block" type="submit">Submit</button>
             </form>
-          </div>
-        </div>{% endif %}
-        <hr>
-        <div class="row">
-          <div class="col-sm-12">
-            <h3>Transfers</h3>
-            <table class="table table-sm table-bordered">
-              <thead>
-                <tr>
-                  <th>Pick up time</th>
-                  <th>Number of seats</th>
-                  <th>Route</th>
-                  <th></th>
-                </tr>
-              </thead>{% for transfer in transfers %}
-              <tr>
-                <td>{{ transfer.pick_up_time }}</td>
-                <td>{{ transfer.total_seats }}</td>
-                <td>{{ transfer.stopovers_text }}</td>
-                <th><a class="delete-confirmation" href="{% url 'refugee:reserve_transfer_service' transfer_id=transfer.id %}" data-confirm="Are you sure you want to reserve?">
-                    <button class="btn btn-sm btn-outline-success">Reserve</button></a></th>
-              </tr>{% endfor %}
-            </table>
           </div>
         </div>
       </div>
