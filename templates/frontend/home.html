@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
   <body>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
@@ -58,23 +59,60 @@
         <hr>
         <div class="row">
           <div class="col-sm-12">
-            <h3>Transfers</h3>
-            <table class="table table-sm table-bordered">
+            <h4>Search Transfer</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <form id="transfer-search-form">
+              <input id="transfer-page" type="hidden" name="page" value="1">
+              <div class="row">
+                <div class="col">
+                  <select class="select-autocomplete" name="start_city" title="From" required>{% for city in cities %}
+                    <option value="{{ city.id }}">{{ city.name }}</option>{% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select class="select-autocomplete" name="end_city" title="To" required>{% for city in cities %}
+                    <option value="{{ city.id }}">{{ city.name }}</option>{% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select class="select-autocomplete" name="seats" title="Seats" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <input class="form-control date-picker" name="date" placeholder="Enter date" autocomplete="off" required>
+                </div>
+                <div class="col">
+                  <button class="btn btn-dark" type="submit">Search</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="text-center" id="loading"><img src="{% static 'images/icons/Ripple-1s-200px.svg' %}"></div>
+            <table class="table table-bordered table-sm" id="transfer-table" style="display: none;">
               <thead>
                 <tr>
                   <th>Pick up time</th>
-                  <th>Number of seats</th>
                   <th>Route</th>
-                  <th></th>
+                  <th>Reserve</th>
                 </tr>
-              </thead>{% for transfer in transfers %}
-              <tr>
-                <td>{{ transfer.pick_up_time }}</td>
-                <td>{{ transfer.total_seats }}</td>
-                <td>{{ transfer.stopovers_text }}</td>
-                <th><a class="delete-confirmation" href="{% url 'refugee:reserve_transfer_service' transfer_id=transfer.id %}" data-confirm="Are you sure you want to reserve?">
-                    <button class="btn btn-sm btn-outline-success">Reserve</button></a></th>
-              </tr>{% endfor %}
+              </thead>
+              <tbody id="transfer-tbody"></tbody>
             </table>
           </div>
         </div>
@@ -117,7 +155,8 @@
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-  <script src="{% static 'js/vendor/select2.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
   <script src="{% static 'js/src/main.js' %}"></script>
   <script>
@@ -128,5 +167,54 @@
       "showTodayButton": true,
       "format": "DD/MM/YYYY HH:mm",
     });
+    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
+    $('.select-autocomplete').selectpicker();
+  </script>
+  <script>
+    var loading = $("#loading");
+    var transfer_page = 1;
+    var transfer_table = $("#transfer-table");
+    var transfer_body = $("#transfer-tbody");
+    var transfer_form = $("#transfer-search-form");
+    var transfer_page_input = $("#transfer-page");
+    function formcheck() {
+        var fields = transfer_form.find('select, textarea, input').serializeArray();
+        $.each(fields, function (i, field) {
+            if (!field.value) alert(field.title + ' is required');
+        });
+    }
+    function get_transfers(check_form) {
+        if (check_form) {
+            formcheck();
+        };
+        var html = '';
+        loading.show();
+        transfer_table.hide();
+        $.get("/api/get_transfers", transfer_form.serialize()).done(function (data) {
+            for (var i = 0; i < data.results.length ; i++) {
+                html += (
+                    "<tr>" +
+                    "<td>" + data.results[i].pick_up_time + "</td>" +
+                    "<td>" + data.results[i].route + "</td>" +
+                    "<td><a href='/refugee/reserve_transfer_service/" + data.results[i].id + "' data-confirm='Are you sure you want to reserve?'>" +
+                    "<button class='btn btn-sm btn-default'><i class='fa fa-truck'></i></button></a></td></tr>"
+                );
+            }
+            if (html === '') {
+                html = "<tr><td colspan=3>No results found</td></tr>";
+            }
+            transfer_body.append(html);
+            transfer_table.show();
+            loading.hide();
+        })
+    }
+    $(function (){
+        get_transfers(false);
+        $("#transfer-search-form").submit(function (e){
+            e.preventDefault();
+            transfer_body.html('');
+            get_transfers(true);
+        })
+    })
   </script>
 </html>

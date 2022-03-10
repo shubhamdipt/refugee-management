@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
     <style>
       .alert {
           position: relative !important;
@@ -107,7 +108,8 @@
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-  <script src="{% static 'js/vendor/select2.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
   <script src="{% static 'js/src/main.js' %}"></script>
   <script>
@@ -118,5 +120,7 @@
       "showTodayButton": true,
       "format": "DD/MM/YYYY HH:mm",
     });
+    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
+    $('.select-autocomplete').selectpicker();
   </script>
 </html>

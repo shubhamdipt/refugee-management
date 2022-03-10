@@ -22,6 +22,8 @@ ssh $1 << ENDSSH
 set -e
 sudo su
 
+rm -rf /home/$USER/$PROJECT
+
 if [ ! -d "/home/$USER/local_settings" ]
 then
     printf "Created local_settings directory.\n\n"

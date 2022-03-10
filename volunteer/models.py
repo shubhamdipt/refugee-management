@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from locations.models import City
+from locations.models import Route, RouteCities
 from refugee_management.models import CreateUpdateModel
 
 
@@ -22,10 +22,11 @@ class Volunteer(models.Model):
 
 
 # Services
-class TransferService(CreateUpdateModel):
+class Transfer(CreateUpdateModel):
     volunteer = models.ForeignKey(
         Volunteer, verbose_name=_("Volunteer"), on_delete=models.SET_NULL, null=True, blank=True
     )
+    route = models.ForeignKey(Route, verbose_name=_("Route"), on_delete=models.SET_NULL, null=True, blank=True)
     pick_up_time = models.DateTimeField(_("Pick up time"))
     total_seats = models.IntegerField("Total seats", validators=[MinValueValidator(1), MaxValueValidator(1000)])
     active = models.BooleanField(_("Active"), default=True)
@@ -39,22 +40,21 @@ class TransferService(CreateUpdateModel):
 
     @property
     def stopovers(self):
-        return TransferRouteCities.objects.filter(transfer=self).order_by("route_order")
+        return RouteCities.objects.filter(route=self.route).select_related("city").order_by("route_order")
 
     @property
     def stopovers_text(self):
-        return " -> ".join([str(i.city) for i in self.stopovers])
+        return " -> ".join([i.city.name for i in self.stopovers])
 
+    @property
+    def route_text(self):
+        cities = [str(i.city) for i in self.stopovers]
+        return f"{cities[0]} -> {cities[-1]}"
 
-class TransferRouteCities(models.Model):
-    transfer = models.ForeignKey(TransferService, verbose_name=_("Transfer ID"), on_delete=models.CASCADE)
-    city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE)
-    route_order = models.IntegerField("Order", validators=[MinValueValidator(1), MaxValueValidator(100)])
-
-    class Meta:
-        verbose_name = _("Transfer Route Cities")
-        verbose_name_plural = _("Transfer Route Cities")
-        unique_together = ("transfer", "city")
-
-    def __str__(self):
-        return f"{self.transfer_id}: {self.city} ({self.route_order})"
+    def as_dict(self):
+        return {
+            "id": self.pk,
+            "pick_up_time": self.pick_up_time.strftime("%d/%m/%Y %H:%M"),
+            "total_seats": self.total_seats,
+            "route": self.stopovers_text,
+        }

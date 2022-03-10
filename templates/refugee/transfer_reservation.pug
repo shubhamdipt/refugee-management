@@ -5,6 +5,9 @@ block content
             .col-sm-12
                 h1 Make transfer reservation
         .row
+            .col-sm-12
+                h5(style="color: darkgrey;") {{ transfer.stopovers_text }}
+        .row
             .col-sm-6
                 form(method="POST")
                     | {% csrf_token %}

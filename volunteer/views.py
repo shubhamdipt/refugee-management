@@ -5,26 +5,27 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect, render, reverse
 from django.views.decorators.http import require_POST
 
-from locations.models import City
+from locations.models import Route
 from refugee_management.custom_access import volunteer_access
-from volunteer.models import TransferRouteCities, TransferService
+from volunteer.models import Transfer
 
 
-@volunteer_access
+@volunteer_access()
 def services(request, volunteer):
     return render(
         request,
         "volunteer/services.html",
-        {"transfers": TransferService.objects.filter(volunteer=volunteer).order_by("-pick_up_time")},
+        {"transfers": Transfer.objects.filter(volunteer=volunteer).order_by("-pick_up_time")},
     )
 
 
 @transaction.atomic
-@volunteer_access
+@volunteer_access()
 @require_POST
 def add_transfer_service(request, volunteer):
     transfer_datetime = datetime.strptime(request.POST.get("transfer-datetime"), "%d/%m/%Y %H:%M")
     transfer_refugees = request.POST.get("transfer-refugees")
+    route_id = request.POST.get("route_id")
     cities = []
     count = 1
     while True:
@@ -38,22 +39,21 @@ def add_transfer_service(request, volunteer):
     if not (transfer_datetime and transfer_refugees and len(cities) > 1):
         return HttpResponseBadRequest("Invalid form submitted.")
     try:
-        obj, created = TransferService.objects.get_or_create(
+        route, _ = Route.objects.get_or_create_with_cities_ids(cities_ids=cities)
+        Transfer.objects.get_or_create(
             volunteer=volunteer,
             total_seats=int(transfer_refugees),
             pick_up_time=transfer_datetime,
+            route=route,
         )
-        if created:
-            for count, value in enumerate(cities):
-                TransferRouteCities.objects.create(
-                    transfer=obj, city=City.objects.get(id=value), route_order=(count + 1)
-                )
     except IntegrityError as e:
-        return HttpResponseBadRequest("Invalid form submitted. Same cities have been entered more once as stopovers.")
+        return HttpResponseBadRequest(
+            "Invalid form submitted. Same cities have been entered more than once as stopovers."
+        )
     return redirect(reverse("volunteer:services"))
 
 
-@volunteer_access
+@volunteer_access()
 def delete_transfer_service(request, volunteer, transfer_id):
-    TransferService.objects.filter(id=transfer_id, volunteer=volunteer).delete()
+    Transfer.objects.filter(id=transfer_id, volunteer=volunteer).delete()
     return redirect(reverse("volunteer:services"))

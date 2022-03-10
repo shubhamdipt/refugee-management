@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
   <body>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
@@ -116,7 +117,7 @@
                             <th>Number of seats</th>
                             <th>Route</th>
                             <th>Status</th>
-                            <th></th>
+                            <th>Delete</th>
                           </tr>
                         </thead>{% for transfer in transfers %}
                         <tr>
@@ -127,7 +128,8 @@
                             <div class="fa fa-check-circle"></div>{% else %}
                             <div class="fa fa-times-circle"></div>{% endif %}
                           </td>
-                          <th><a class="delete-confirmation" href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">Delete</a></th>
+                          <th><a class="delete-confirmation" href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">
+                              <div class="fa fa-times-circle grey"></div></a></th>
                         </tr>{% endfor %}
                       </table>
                     </div>
@@ -184,7 +186,8 @@
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
-  <script src="{% static 'js/vendor/select2.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
   <script src="{% static 'js/src/main.js' %}"></script>
   <script>
@@ -195,6 +198,8 @@
       "showTodayButton": true,
       "format": "DD/MM/YYYY HH:mm",
     });
+    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
+    $('.select-autocomplete').selectpicker();
   </script>
   <script>
     var stops_table = $("#stops-table");
@@ -207,10 +212,10 @@
                     html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
                 }
                 html += "</select>";
-                stops_table.append("<tr><td>#" + (stop_number+1) + "</td><td>" + html + "</td></tr>");
+                stops_table.append("<tr><td><div style='margin-top: 5px;'>#" + (stop_number+1) + "</div></td><td>" + html + "</td></tr>");
             })
             .always(function () {
-                $('.autocomplete-stops').select2();
+                $('.autocomplete-stops').selectpicker();
             });
     }
     $("#add-stop").click(function (e){

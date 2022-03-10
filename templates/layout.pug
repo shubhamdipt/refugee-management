@@ -19,7 +19,8 @@ html(lang='en')
         link(rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}")
         link(rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}")
         link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}")
-        link(rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}")
+        link(rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}")
 
 
         block canonical
@@ -37,7 +38,8 @@ html(lang='en')
     script(src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}")
     script(src="{% static 'js/vendor/moment-with-locales.min.js' %}")
     script(src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}")
-    script(src="{% static 'js/vendor/select2.min.js' %}")
+    script(src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}")
+    script(src="{% static 'js/vendor/bootstrap-select.min.js' %}")
     script(src="{% static 'js/src/ajax_setup.js' %}")
     script(src="{% static 'js/src/main.js' %}")
     script.
@@ -48,5 +50,7 @@ html(lang='en')
           "showTodayButton": true,
           "format": "DD/MM/YYYY HH:mm",
         });
+        $('.date-picker').datepicker({format: "dd/mm/yyyy"});
+        $('.select-autocomplete').selectpicker();
     block modal
     block extra_js

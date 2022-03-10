@@ -7,17 +7,20 @@ from refugee.models import Refugee
 from volunteer.models import Volunteer
 
 
-def volunteer_access(view_func, redirect_url=None):
-    @wraps(view_func)
-    def view_wrapper(request, *args, **kwargs):
-        user = Volunteer.objects.filter(account_user=request.user).first()
-        if user:
-            return view_func(request, user, *args, **kwargs)
-        if redirect_url:
-            return redirect(redirect_url)
-        return HttpResponseForbidden("Not authorized. Contact Admin")
+def volunteer_access(redirect_url=None):
+    def access(view_func):
+        @wraps(view_func)
+        def view_wrapper(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                if user := Volunteer.objects.filter(account_user=request.user).first():
+                    return view_func(request, user, *args, **kwargs)
+            if redirect_url:
+                return redirect(redirect_url)
+            return HttpResponseForbidden("Not authorized. Contact Admin")
 
-    return view_wrapper
+        return view_wrapper
+
+    return access
 
 
 def refugee_access(redirect_url=None):

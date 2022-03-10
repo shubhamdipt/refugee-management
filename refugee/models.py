@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from locations.models import City
 from refugee_management.models import CreateUpdateModel
-from volunteer.models import TransferService
+from volunteer.models import Transfer
 
 
 class Refugee(models.Model):
@@ -23,16 +23,28 @@ class Refugee(models.Model):
 
 
 class TransferServiceReservation(CreateUpdateModel):
-    transfer = models.ForeignKey(TransferService, verbose_name=_("Transfer"), on_delete=models.CASCADE)
+    transfer = models.ForeignKey(Transfer, verbose_name=_("Transfer"), on_delete=models.CASCADE)
     refugee = models.ForeignKey(Refugee, verbose_name=_("Refugee"), on_delete=models.CASCADE)
     start_city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE, related_name="start_city")
     end_city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE, related_name="end_city")
     seats = models.IntegerField(_("Seats"), validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
     class Meta:
-        verbose_name = _("Transfer Service Reservation")
-        verbose_name_plural = _("Transfer Service Reservations")
+        verbose_name = _("Transfer Reservation")
+        verbose_name_plural = _("Transfer Reservations")
         unique_together = ("transfer", "refugee")
 
     def __str__(self):
         return f"{self.refugee} -> {self.transfer}"
+
+    def route_text(self):
+        route_cities = []
+        start = False
+        for route_city in self.transfer.stopovers:
+            if route_city.city == self.start_city:
+                start = True
+            if start:
+                route_cities.append(route_city.city.name)
+            if route_city.city == self.end_city:
+                break
+        return " -> ".join(route_cities)

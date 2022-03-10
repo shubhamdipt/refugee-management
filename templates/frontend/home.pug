@@ -16,20 +16,95 @@ block content
         hr
         .row
             .col-sm-12
-                h3 Transfers
-                table.table.table-sm.table-bordered
+                h4 Search Transfer
+        .row
+            .col-sm-12
+                form#transfer-search-form
+                    input#transfer-page(type="hidden", name="page" value=1)
+                    .row
+                        .col
+                            select.select-autocomplete(name="start_city", title="From", required)
+                                | {% for city in cities %}
+                                option(value="{{ city.id }}") {{ city.name }}
+                                | {% endfor %}
+                        .col
+                            select.select-autocomplete(name="end_city", title="To", required)
+                                | {% for city in cities %}
+                                option(value="{{ city.id }}") {{ city.name }}
+                                | {% endfor %}
+                        .col
+                            select.select-autocomplete(name="seats", title="Seats", required)
+                                option(value="1") 1
+                                option(value="2") 2
+                                option(value="3") 3
+                                option(value="4") 4
+                                option(value="5") 5
+                                option(value="6") 6
+                                option(value="7") 7
+                                option(value="8") 8
+                                option(value="9") 9
+                                option(value="10") 10
+                        .col
+                            input.form-control.date-picker(name="date", placeholder="Enter date", autocomplete="off", required)
+                        .col
+                            button.btn.btn-dark(type="submit") Search
+
+        .row
+            .col-sm-12
+                #loading.text-center
+                    img(src="{% static 'images/icons/Ripple-1s-200px.svg' %}")
+                table#transfer-table.table.table-bordered.table-sm(style="display: none;")
                     thead
                         tr
                             th Pick up time
-                            th Number of seats
                             th Route
-                            th
-                    | {% for transfer in transfers %}
-                    tr
-                        td {{ transfer.pick_up_time }}
-                        td {{ transfer.total_seats }}
-                        td {{ transfer.stopovers_text }}
-                        th
-                            a.delete-confirmation(href="{% url 'refugee:reserve_transfer_service' transfer_id=transfer.id %}", data-confirm="Are you sure you want to reserve?")
-                                button.btn.btn-sm.btn-outline-success Reserve
-                    | {% endfor %}
+                            th Reserve
+                    tbody#transfer-tbody
+
+block extra_js
+    script.
+        var loading = $("#loading");
+        var transfer_page = 1;
+        var transfer_table = $("#transfer-table");
+        var transfer_body = $("#transfer-tbody");
+        var transfer_form = $("#transfer-search-form");
+        var transfer_page_input = $("#transfer-page");
+        function formcheck() {
+            var fields = transfer_form.find('select, textarea, input').serializeArray();
+            $.each(fields, function (i, field) {
+                if (!field.value) alert(field.title + ' is required');
+            });
+        }
+        function get_transfers(check_form) {
+            if (check_form) {
+                formcheck();
+            };
+            var html = '';
+            loading.show();
+            transfer_table.hide();
+            $.get("/api/get_transfers", transfer_form.serialize()).done(function (data) {
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += (
+                        "<tr>" +
+                        "<td>" + data.results[i].pick_up_time + "</td>" +
+                        "<td>" + data.results[i].route + "</td>" +
+                        "<td><a href='/refugee/reserve_transfer_service/" + data.results[i].id + "' data-confirm='Are you sure you want to reserve?'>" +
+                        "<button class='btn btn-sm btn-default'><i class='fa fa-truck'></i></button></a></td></tr>"
+                    );
+                }
+                if (html === '') {
+                    html = "<tr><td colspan=3>No results found</td></tr>";
+                }
+                transfer_body.append(html);
+                transfer_table.show();
+                loading.hide();
+            })
+        }
+        $(function (){
+            get_transfers(false);
+            $("#transfer-search-form").submit(function (e){
+                e.preventDefault();
+                transfer_body.html('');
+                get_transfers(true);
+            })
+        })

@@ -1,0 +1,55 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-12
+                h1
+                    | Welcome &nbsp;
+                    span(style="font-weight: normal; font-size: 20px; font-style: italic;") {{ request.user.email }} &nbsp;
+                    span(style="font-weight: bold; font-size: 15px; color:darkgreen;") (REFUGEE)
+                p Please check your booked services.
+        hr
+        .row
+            .col-sm-12
+                #accordion
+                    .card(style="border: none;")
+                        #serviceOne.card-header
+                            h5.mb-0
+                                button.btn.btn-outline-primary(data-toggle='collapse' data-target='#collapseOne' aria-expanded='true' aria-controls='collapseOne')
+                                    | Transfer
+                        #collapseOne.collapse.show(aria-labelledby='serviceOne' data-parent='#accordion')
+                            .card-body
+                                div(style="width: 100%; margin: 10px 0 10px 0;")
+                                    h5 My transfers
+                                    table.table.table-sm.table-bordered
+                                        thead
+                                            tr
+                                                th Pick up time
+                                                th Reserved seats
+                                                th Route
+                                                th Status
+                                                th Delete
+                                        | {% for reservation in transfer_reservations %}
+                                        tr
+                                            td {{ reservation.transfer.pick_up_time }}
+                                            td {{ reservation.seats }}
+                                            td {{ reservation.route_text }}
+                                            td
+                                                | {% if reservation.transfer.active %}
+                                                .fa.fa-check-circle
+                                                | {% else %}
+                                                .fa.fa-times-circle
+                                                | {% endif %}
+                                            th
+                                                a.delete-confirmation(href="{% url 'refugee:delete_transfer_service_reservation' reservation_id=reservation.id %}", data-confirm="Are you sure you want to delete?")
+                                                    .fa.fa-times-circle.grey
+                                        | {% endfor %}
+
+                    //.card
+                    //    #serviceTwo.card-header
+                    //        h5.mb-0
+                    //            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')
+                    //                | Hosting
+                    //    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')
+                    //        .card-body
+                    //            | To be implemented

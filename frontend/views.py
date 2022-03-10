@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render, reverse
-from django.utils import timezone
 
 from accounts.forms import AccountUserCreationForm
+from locations.models import City
 from refugee.models import Refugee
-from volunteer.models import TransferService, Volunteer
+from volunteer.models import Volunteer
 
 
 def home(request):
@@ -19,7 +19,7 @@ def home(request):
             ctx["success"] = "Successfully registered. Please login."
             form = AccountUserCreationForm()
     ctx["registration_form"] = form
-    ctx["transfers"] = TransferService.objects.filter(pick_up_time__gte=timezone.now()).order_by("-pick_up_time")
+    ctx["cities"] = City.objects.order_by("name")
     return render(request, "frontend/home.html", ctx)
 
 

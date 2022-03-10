@@ -61,7 +61,7 @@ block content
                                                 th Number of seats
                                                 th Route
                                                 th Status
-                                                th
+                                                th Delete
                                         | {% for transfer in transfers %}
                                         tr
                                             td {{ transfer.pick_up_time }}
@@ -74,7 +74,8 @@ block content
                                                 .fa.fa-times-circle
                                                 | {% endif %}
                                             th
-                                                a.delete-confirmation(href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}", data-confirm="Are you sure you want to delete?") Delete
+                                                a.delete-confirmation(href="{% url 'volunteer:delete_transfer_service' transfer_id=transfer.id %}", data-confirm="Are you sure you want to delete?")
+                                                    .fa.fa-times-circle.grey
                                         | {% endfor %}
 
                     //.card
@@ -99,10 +100,10 @@ block extra_js
                         html += "<option value='" + data.results[i].id + "'>" + data.results[i].text + "</option>"
                     }
                     html += "</select>";
-                    stops_table.append("<tr><td>#" + (stop_number+1) + "</td><td>" + html + "</td></tr>");
+                    stops_table.append("<tr><td><div style='margin-top: 5px;'>#" + (stop_number+1) + "</div></td><td>" + html + "</td></tr>");
                 })
                 .always(function () {
-                    $('.autocomplete-stops').select2();
+                    $('.autocomplete-stops').selectpicker();
                 });
         }
         $("#add-stop").click(function (e){
