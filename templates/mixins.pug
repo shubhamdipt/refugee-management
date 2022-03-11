@@ -1,3 +1,25 @@
+mixin gaSetup()
+    | {% if not request.user.is_superuser %}
+    +gaProduction()
+    | {% else %}
+    +gaDevelopment()
+    | {% endif %}
+
+mixin gaDevelopment()
+    script.
+        ga = function () {
+            console.log('ga:', arguments);
+        };
+
+mixin gaProduction()
+    // Global site tag (gtag.js) - Google Analytics
+    script(async='' src='https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3')
+    script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GH7KMYE0E3');
+
 mixin pagination
     | {% if page_number_list %}
     nav(aria-label='...')

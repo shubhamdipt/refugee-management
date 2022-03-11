@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="text/html; charset=UTF-8" name="Content-Type">
     <link rel="shortcut icon" href="{% static 'images/logo/favicon.ico' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/logo/apple-icon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo/apple-touch-icon.png' %}">
+    <!-- Facebook Card-->
+    <meta property="og:title" content="Refugee Management Service">
+    <meta property="og:url" content="https://www.refugeecare.eu">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
+    <meta property="og:image" content="{% static 'images/logo/apple-touch-icon.png' %}">
+    <!-- Twitter Card-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Refugee Management Service">
+    <meta name="twitter:description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
+    <meta name="twitter:url" content="https://www.refugeecare.eu">
+    <meta name="twitter:image" content="{% static 'images/logo/apple-touch-icon.png' %}">
+    <meta name="robots" content="index, follow">
     <title>Refugee Management</title>
+    <meta name="description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
     <!-- CSS-->
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
@@ -216,5 +231,20 @@
             get_transfers(true);
         })
     })
-  </script>
+  </script>{% if not request.user.is_superuser %}
+          <!-- Global site tag (gtag.js) - Google Analytics-->
+          <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-GH7KMYE0E3');
+            
+          </script>{% else %}
+          <script>
+            ga = function () {
+                console.log('ga:', arguments);
+            };
+            
+          </script>{% endif %}
 </html>
