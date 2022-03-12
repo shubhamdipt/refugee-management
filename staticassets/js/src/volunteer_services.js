@@ -57,7 +57,7 @@ function get_transfers() {
             );
         }
         if (html === '') {
-            html = "<tr><td colspan=5>No results found</td></tr>";
+            html = "<tr><td colspan=7>No results found</td></tr>";
         }
         transfers_tbody.append(html);
         transfers_table.show();
