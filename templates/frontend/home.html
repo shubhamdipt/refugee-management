@@ -30,7 +30,8 @@
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
-  <body>{% if success %}
+  <body>
+    <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
     </div>{% endif %}
@@ -122,9 +123,9 @@
             <table class="table table-bordered table-sm" id="transfer-table" style="display: none;">
               <thead>
                 <tr>
-                  <th>Pick up time</th>
+                  <th>Start time</th>
                   <th>Route</th>
-                  <th>Reserve</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="transfer-tbody"></tbody>
@@ -174,64 +175,7 @@
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
   <script src="{% static 'js/src/main.js' %}"></script>
-  <script>
-    $('.date-time-picker').datetimepicker({
-      "allowInputToggle": true,
-      "showClose": true,
-      "showClear": true,
-      "showTodayButton": true,
-      "format": "DD/MM/YYYY HH:mm",
-    });
-    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
-    $('.select-autocomplete').selectpicker();
-  </script>
-  <script>
-    var loading = $("#loading");
-    var transfer_page = 1;
-    var transfer_table = $("#transfer-table");
-    var transfer_body = $("#transfer-tbody");
-    var transfer_form = $("#transfer-search-form");
-    var transfer_page_input = $("#transfer-page");
-    function formcheck() {
-        var fields = transfer_form.find('select, textarea, input').serializeArray();
-        $.each(fields, function (i, field) {
-            if (!field.value) alert(field.title + ' is required');
-        });
-    }
-    function get_transfers(check_form) {
-        if (check_form) {
-            formcheck();
-        };
-        var html = '';
-        loading.show();
-        transfer_table.hide();
-        $.get("/api/get_transfers", transfer_form.serialize()).done(function (data) {
-            for (var i = 0; i < data.results.length ; i++) {
-                html += (
-                    "<tr>" +
-                    "<td>" + data.results[i].pick_up_time + "</td>" +
-                    "<td>" + data.results[i].route + "</td>" +
-                    "<td><a href='/refugee/reserve_transfer_service/" + data.results[i].id + "' data-confirm='Are you sure you want to reserve?'>" +
-                    "<button class='btn btn-sm btn-default'><i class='fa fa-truck'></i></button></a></td></tr>"
-                );
-            }
-            if (html === '') {
-                html = "<tr><td colspan=3>No results found</td></tr>";
-            }
-            transfer_body.append(html);
-            transfer_table.show();
-            loading.hide();
-        })
-    }
-    $(function (){
-        get_transfers(false);
-        $("#transfer-search-form").submit(function (e){
-            e.preventDefault();
-            transfer_body.html('');
-            get_transfers(true);
-        })
-    })
-  </script>{% if not request.user.is_superuser %}
+  <script src="{% static 'js/src/home.js' %}"></script>{% if not request.user.is_superuser %}
           <!-- Global site tag (gtag.js) - Google Analytics-->
           <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
           <script>

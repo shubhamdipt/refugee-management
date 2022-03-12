@@ -1,6 +1,6 @@
 import itertools
 
-from refugee.models import TransferServiceReservation
+from refugee.models import TransferReservation
 from volunteer.models import Transfer
 
 
@@ -8,7 +8,7 @@ class SeatsManagement:
     def __init__(self, transfer: Transfer):
         self.transfer = transfer
         self.total_seats = transfer.total_seats
-        self.cities = [(i.city.id, i.route_order, str(i.city)) for i in transfer.stopovers]
+        self.cities = [(i.city.id, count + 1, str(i.city)) for count, i in enumerate(transfer.stopovers)]
 
     def _replace_order_by_city_id(self, available_seats: dict):
         city_order = {i[1]: i[0] for i in self.cities}
@@ -27,9 +27,9 @@ class SeatsManagement:
 
         available_seats = {}
         booked_seats = {
-            (cities_order[i.start_city.id], cities_order[i.end_city.id]): i.seats
-            for i in TransferServiceReservation.objects.filter(transfer=self.transfer).select_related(
-                "start_city", "end_city"
+            (cities_order[i.from_city.city.id], cities_order[i.to_city.city.id]): i.seats
+            for i in TransferReservation.objects.filter(transfer=self.transfer).select_related(
+                "from_city__city", "to_city__city"
             )
         }
 

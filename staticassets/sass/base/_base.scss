@@ -52,6 +52,17 @@ hr {
   color: #5b5b5b;
   font-size: 14px;
 }
+table {
+  font-size: 14px;
+}
+#formResult {
+  position: fixed;
+  z-index: 10000;
+  top: 80px;
+  width: 70%;
+  margin: 0 0 0 15%;
+  text-align: center;
+}
 
 
 //Override plugin css

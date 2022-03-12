@@ -9,5 +9,5 @@ urlpatterns = [
     path("services", services, name="services"),
     path("data-privacy", data_privacy, name="data_privacy"),
     # APIs
-    path("api/get_transfers", get_transfers, name="get_transfers"),
+    path("api/get-transfers", get_transfers, name="get_transfers"),
 ]

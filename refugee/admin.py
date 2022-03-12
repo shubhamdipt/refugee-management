@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from refugee.models import Refugee, TransferServiceReservation
+from refugee.models import Refugee, TransferReservation
 
 
 @admin.register(Refugee)
@@ -9,8 +9,8 @@ class RefugeeAdmin(admin.ModelAdmin):
     search_fields = ("account_user__email",)
 
 
-@admin.register(TransferServiceReservation)
-class TransferServiceReservationAdmin(admin.ModelAdmin):
-    list_display = ("id", "refugee", "transfer", "start_city", "end_city")
+@admin.register(TransferReservation)
+class TransferReservationAdmin(admin.ModelAdmin):
+    list_display = ("id", "refugee", "transfer", "from_city", "to_city")
     search_fields = ("refugee__account_user__email",)
     ordering = ("-transfer__pick_up_time",)

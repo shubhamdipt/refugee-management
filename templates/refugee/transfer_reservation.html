@@ -30,7 +30,8 @@
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
-  <body>{% if success %}
+  <body>
+    <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
     </div>{% endif %}
@@ -73,6 +74,25 @@
               {{ form|crispy }}
               <button class="btn btn-dark btn-block" type="submit">Submit</button>
             </form>
+          </div>
+          <div class="col-sm-6">
+            <h5>Available seats</h5>
+            <table class="table table-sm table-bordered" style="color: #6e6e6e;">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Seats</th>
+                </tr>
+              </thead>
+              <tbody>{% for from_city, to_city, count in seats %}
+                <tr>
+                  <td>{{ from_city }}</td>
+                  <td>{{ to_city }}</td>
+                  <td>{{ count }}</td>
+                </tr>{% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -117,18 +137,7 @@
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
-  <script src="{% static 'js/src/main.js' %}"></script>
-  <script>
-    $('.date-time-picker').datetimepicker({
-      "allowInputToggle": true,
-      "showClose": true,
-      "showClear": true,
-      "showTodayButton": true,
-      "format": "DD/MM/YYYY HH:mm",
-    });
-    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
-    $('.select-autocomplete').selectpicker();
-  </script>{% if not request.user.is_superuser %}
+  <script src="{% static 'js/src/main.js' %}"></script>{% if not request.user.is_superuser %}
           <!-- Global site tag (gtag.js) - Google Analytics-->
           <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
           <script>

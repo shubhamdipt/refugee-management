@@ -3,9 +3,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from locations.models import City
 from refugee_management.models import CreateUpdateModel
-from volunteer.models import Transfer
+from volunteer.models import Transfer, TransferRouteDetails
 
 
 class Refugee(models.Model):
@@ -22,11 +21,15 @@ class Refugee(models.Model):
         return self.account_user.email
 
 
-class TransferServiceReservation(CreateUpdateModel):
+class TransferReservation(CreateUpdateModel):
     transfer = models.ForeignKey(Transfer, verbose_name=_("Transfer"), on_delete=models.CASCADE)
     refugee = models.ForeignKey(Refugee, verbose_name=_("Refugee"), on_delete=models.CASCADE)
-    start_city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE, related_name="start_city")
-    end_city = models.ForeignKey(City, verbose_name=_("City"), on_delete=models.CASCADE, related_name="end_city")
+    from_city = models.ForeignKey(
+        TransferRouteDetails, verbose_name=_("From city"), on_delete=models.CASCADE, related_name="start_city"
+    )
+    to_city = models.ForeignKey(
+        TransferRouteDetails, verbose_name=_("To city"), on_delete=models.CASCADE, related_name="end_city"
+    )
     seats = models.IntegerField(_("Seats"), validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
     class Meta:
@@ -37,14 +40,23 @@ class TransferServiceReservation(CreateUpdateModel):
     def __str__(self):
         return f"{self.refugee} -> {self.transfer}"
 
+    @property
     def route_text(self):
         route_cities = []
         start = False
         for route_city in self.transfer.stopovers:
-            if route_city.city == self.start_city:
+            if route_city.city == self.from_city.city:
                 start = True
             if start:
                 route_cities.append(route_city.city.name)
-            if route_city.city == self.end_city:
+            if route_city.city == self.to_city.city:
                 break
         return " -> ".join(route_cities)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "route": self.route_text,
+            "seats": self.seats,
+            "departure_time": self.from_city.departure_time.strftime("%d/%m/%Y %H:%M"),
+        }

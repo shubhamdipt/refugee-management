@@ -39,7 +39,8 @@
       }
     </style>
   </head>
-  <body>{% if success %}
+  <body>
+    <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
     <div class="alert alert-success alert-dismissable form-success" role="alert">
       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
     </div>{% endif %}
@@ -126,18 +127,7 @@
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
-  <script src="{% static 'js/src/main.js' %}"></script>
-  <script>
-    $('.date-time-picker').datetimepicker({
-      "allowInputToggle": true,
-      "showClose": true,
-      "showClear": true,
-      "showTodayButton": true,
-      "format": "DD/MM/YYYY HH:mm",
-    });
-    $('.date-picker').datepicker({format: "dd/mm/yyyy"});
-    $('.select-autocomplete').selectpicker();
-  </script>{% if not request.user.is_superuser %}
+  <script src="{% static 'js/src/main.js' %}"></script>{% if not request.user.is_superuser %}
           <!-- Global site tag (gtag.js) - Google Analytics-->
           <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
           <script>

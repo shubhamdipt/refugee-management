@@ -1,43 +1,51 @@
+import itertools
+
 from django.shortcuts import redirect, render, reverse
 
-from refugee.forms import TransferServiceReservationForm
-from refugee.models import TransferServiceReservation
+from refugee.forms import TransferReservationForm
+from refugee.models import TransferReservation
 from refugee_management.custom_access import refugee_access
-from volunteer.models import Transfer
+from volunteer.models import Transfer, TransferRouteDetails
+from volunteer.seats_management import SeatsManagement
 
 
 @refugee_access()
 def services(request, refugee):
-    return render(
-        request,
-        "refugee/services.html",
-        {
-            "transfer_reservations": TransferServiceReservation.objects.filter(refugee=refugee)
-            .select_related("transfer")
-            .order_by("-transfer__pick_up_time")
-        },
-    )
+    return render(request, "refugee/services.html", {})
 
 
 @refugee_access(redirect_url="/login")
-def reserve_transfer_service(request, refugee, transfer_id):
+def reserve_transfer(request, refugee, transfer_id):
     transfer = Transfer.objects.get(id=transfer_id)
-    form = TransferServiceReservationForm(transfer=transfer, refugee=refugee)
+
+    # Creating seat availabilities
+    availabilities = []
+    seats_management = SeatsManagement(transfer=transfer)
+    available_seats = seats_management.determine_available_seats(return_by_name=True)
+    city_combinations = list(itertools.combinations([str(i.city) for i in transfer.stopovers], 2))
+    for from_city, to_city in city_combinations:
+        availabilities.append((from_city, to_city, available_seats.get((from_city, to_city))))
+
+    form = TransferReservationForm(transfer=transfer, refugee=refugee)
     if request.method == "POST":
-        form = TransferServiceReservationForm(transfer=transfer, refugee=refugee, data=request.POST)
+        form = TransferReservationForm(transfer=transfer, refugee=refugee, data=request.POST)
         if form.is_valid():
-            TransferServiceReservation.objects.create(
+            from_city = TransferRouteDetails.objects.get(city_id=form.cleaned_data["from_city"], transfer=transfer)
+            to_city = TransferRouteDetails.objects.get(city_id=form.cleaned_data["to_city"], transfer=transfer)
+            TransferReservation.objects.create(
                 transfer=transfer,
                 refugee=refugee,
-                start_city_id=form.cleaned_data["start_city"],
-                end_city_id=form.cleaned_data["end_city"],
+                from_city=from_city,
+                to_city=to_city,
                 seats=form.cleaned_data["seats"],
             )
             return redirect(reverse("refugee:services"))
-    return render(request, "refugee/transfer_reservation.html", {"form": form, "transfer": transfer})
+    return render(
+        request, "refugee/transfer_reservation.html", {"form": form, "transfer": transfer, "seats": availabilities}
+    )
 
 
 @refugee_access()
-def delete_transfer_service_reservation(request, refugee, reservation_id):
-    TransferServiceReservation.objects.filter(id=reservation_id, refugee=refugee).delete()
+def delete_transfer_reservation(request, refugee, reservation_id):
+    TransferReservation.objects.filter(id=reservation_id, refugee=refugee).delete()
     return redirect(reverse("refugee:services"))

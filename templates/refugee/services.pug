@@ -21,17 +21,17 @@ block content
                             .card-body
                                 div(style="width: 100%; margin: 10px 0 10px 0;")
                                     h5 My transfers
-                                    table.table.table-sm.table-bordered
+                                    table#transfers-table.table.table-sm.table-bordered
                                         thead
                                             tr
-                                                th Pick up time
+                                                th Departure time
                                                 th Reserved seats
                                                 th Route
-                                                th Status
                                                 th Delete
+                                        tbody#transfers-tbody
                                         | {% for reservation in transfer_reservations %}
                                         tr
-                                            td {{ reservation.transfer.pick_up_time }}
+                                            td {{ reservation.transfer.start_time|date:"d/m/Y H:i" }}
                                             td {{ reservation.seats }}
                                             td {{ reservation.route_text }}
                                             td
@@ -41,15 +41,29 @@ block content
                                                 .fa.fa-times-circle
                                                 | {% endif %}
                                             th
-                                                a.delete-confirmation(href="{% url 'refugee:delete_transfer_service_reservation' reservation_id=reservation.id %}", data-confirm="Are you sure you want to delete?")
+                                                a.delete-confirmation(href="{% url 'refugee:delete_transfer_reservation' reservation_id=reservation.id %}", data-confirm="Are you sure you want to delete?")
                                                     .fa.fa-times-circle.grey
                                         | {% endfor %}
 
-                    //.card
-                    //    #serviceTwo.card-header
-                    //        h5.mb-0
-                    //            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')
-                    //                | Hosting
-                    //    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')
-                    //        .card-body
-                    //            | To be implemented
+block extra_js
+    script(src="{% static 'js/src/refugee_services.js' %}")
+
+block modal
+    #transferDetailsModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title Transfer details
+                    button.close(type='button' data-dismiss='modal' aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    table.table
+                        thead
+                            tr
+                                th #
+                                th Time
+                                th City
+                                th Address
+                        tbody#transfer-details-tbody
+                .modal-footer
+                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close

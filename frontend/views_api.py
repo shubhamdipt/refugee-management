@@ -16,9 +16,11 @@ def get_transfers(request):
     end_city = request.GET.get("end_city")
     date_string = request.GET.get("date")
     seats = request.GET.get("seats")
-    queryset = Transfer.objects.filter(pick_up_time__gte=timezone.now(), active=True).order_by("pick_up_time")
+    queryset = Transfer.objects.filter(active=True).order_by("start_time")
     if date_string:
-        queryset = queryset.filter(pick_up_time__date=datetime.strptime(date_string, "%d/%m/%Y").date())
+        queryset = queryset.filter(start_time__date=datetime.strptime(date_string, "%d/%m/%Y").date())
+    else:
+        queryset = queryset.filter(start_time__gte=timezone.now())
     if start_city or end_city:
         if start_city and end_city:
             query = """

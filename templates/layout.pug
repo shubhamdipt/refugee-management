@@ -47,6 +47,8 @@ html(lang='en')
         block extra_css
     body
         include mixins.pug
+        #formResult.alert.alert-dismissible.fade.in.text-center(role="alert")
+            | {{ form_message }}
         block header
             include ./layout/header.pug
         #content
@@ -63,16 +65,7 @@ html(lang='en')
     script(src="{% static 'js/vendor/bootstrap-select.min.js' %}")
     script(src="{% static 'js/src/ajax_setup.js' %}")
     script(src="{% static 'js/src/main.js' %}")
-    script.
-        $('.date-time-picker').datetimepicker({
-          "allowInputToggle": true,
-          "showClose": true,
-          "showClear": true,
-          "showTodayButton": true,
-          "format": "DD/MM/YYYY HH:mm",
-        });
-        $('.date-picker').datepicker({format: "dd/mm/yyyy"});
-        $('.select-autocomplete').selectpicker();
+
     block modal
     block extra_js
     +gaSetup()
