@@ -40,6 +40,7 @@ class CustomUserManager(BaseUserManager):
 class AccountUser(AbstractUser):
     username = None
     email = models.EmailField(_("Email"), unique=True)
+    phone = models.CharField(_("Phone"), max_length=20, null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -48,3 +49,7 @@ class AccountUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def is_authenticated(self):
+        return self.is_active

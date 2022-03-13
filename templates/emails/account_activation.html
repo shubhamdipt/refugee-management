@@ -1,0 +1,20 @@
+{% autoescape off %}
+<h3>
+    Hello {{ user.get_username }},
+</h3>
+
+To activate your account on {{ domain }}, click the link below:
+<br><br>
+<a href="https://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}">Activate</a>
+<br><br>
+If clicking the link above doesn't work, please copy and paste the URL in a new browser
+window instead.<br>
+Link: https://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
+<br><br>
+Your sincerely,
+<br>
+Admin
+<br>
+(refugeecare.eu)
+
+{% endautoescape %}

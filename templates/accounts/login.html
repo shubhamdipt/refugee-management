@@ -29,19 +29,10 @@
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
-    <style>
-      .alert {
-          position: relative !important;
-          margin: 0 0 20px 0;
-      }
-      #formResult {
-          display: none;
-      }
-    </style>
   </head>
   <body>
     <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
-    <div class="alert alert-success alert-dismissable form-success" role="alert">
+    <div class="alert alert-success alert-dismissable form-success" role="alert" style="margin-bottom: 0px;">
       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
     </div>{% endif %}
     {% if error %}
@@ -53,14 +44,15 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <div class="navbar-nav">
           <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>{% if request.user.is_authenticated %}
-          <div class="nav-item"><a class="nav-link" href="/services">Services</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'frontend:services' %}">Services</a></div>{% endif %}
         </div>
         <div class="navbar-nav ml-auto">
           {% if request.user.is_authenticated %}
           {% if request.user.is_staff %}
           <div class="nav-item"><a class="nav-link" href="/admin">Admin</a></div>{% endif %}
-          <div class="nav-item"><a class="nav-link" href="/logout">Logout</a></div>{% else %}
-          <div class="nav-item"><a class="nav-link" href="/login">Login</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></div>
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></div>{% else %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></div>{% endif %}
         </div>
       </div>
     </nav>
@@ -82,7 +74,14 @@
         </div>
         <div class="row">
           <div class="col-sm-6">
-            <p class="help-block">Are you a new user? &nbsp;<span><a href="{% url 'frontend:home' %}">Register</a></span></p>
+            <div class="row">
+              <div class="col-sm-6">
+                <p class="help-block">Are you a new user? &nbsp;<span><a href="{% url 'frontend:home' %}">Register</a></span></p>
+              </div>
+              <div class="col-sm-6 text-right">
+                <p class="help-block"><span><a href="{% url 'accounts:password_reset' %}">Forgot password</a></span></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

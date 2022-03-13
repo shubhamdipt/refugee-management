@@ -1,6 +1,7 @@
 import itertools
 
 from django.shortcuts import redirect, render, reverse
+from django.urls import reverse_lazy
 
 from refugee.forms import TransferReservationForm
 from refugee.models import TransferReservation
@@ -14,7 +15,7 @@ def services(request, refugee):
     return render(request, "refugee/services.html", {})
 
 
-@refugee_access(redirect_url="/login")
+@refugee_access(redirect_url=reverse_lazy("accounts:login"))
 def reserve_transfer(request, refugee, transfer_id):
     transfer = Transfer.objects.get(id=transfer_id)
 

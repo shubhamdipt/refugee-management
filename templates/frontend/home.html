@@ -32,7 +32,7 @@
   </head>
   <body>
     <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
-    <div class="alert alert-success alert-dismissable form-success" role="alert">
+    <div class="alert alert-success alert-dismissable form-success" role="alert" style="margin-bottom: 0px;">
       <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
     </div>{% endif %}
     {% if error %}
@@ -44,14 +44,15 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <div class="navbar-nav">
           <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>{% if request.user.is_authenticated %}
-          <div class="nav-item"><a class="nav-link" href="/services">Services</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'frontend:services' %}">Services</a></div>{% endif %}
         </div>
         <div class="navbar-nav ml-auto">
           {% if request.user.is_authenticated %}
           {% if request.user.is_staff %}
           <div class="nav-item"><a class="nav-link" href="/admin">Admin</a></div>{% endif %}
-          <div class="nav-item"><a class="nav-link" href="/logout">Logout</a></div>{% else %}
-          <div class="nav-item"><a class="nav-link" href="/login">Login</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></div>
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></div>{% else %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></div>{% endif %}
         </div>
       </div>
     </nav>
@@ -64,12 +65,15 @@
           </div>
         </div>{% if not request.user.is_authenticated %}
         <div class="row">
+          <div class="col sm-6">
+            <div style="margin: 50px; border: 1px solid darkgrey; height: 100px; text-align: center; padding: 20px;">{% if request.user.is_authenticated %}<a href="{% url 'frontend:services' %}" style="display: block;"><img src="{% static 'images/refugee.png' %}" alt="Refugee" style="height: 40px;">
+                <div class="bold">REFUGEE</div></a>{% else %}<a href="{% url 'accounts:register_refugee' %}" style="display: block;"><img src="{% static 'images/refugee.png' %}" alt="Refugee" style="height: 40px;">
+                <div class="bold">REFUGEE</div></a>{% endif %}</div>
+          </div>
           <div class="col-sm-6">
-            <form method="POST">
-              {% csrf_token %}
-              {{ registration_form|crispy }}
-              <button class="btn btn-block btn-outline-success" type="submit">Register</button>
-            </form>
+            <div style="margin: 50px; border: 1px solid darkgrey; height: 100px; text-align: center; padding: 20px;">{% if request.user.is_authenticated %}<a href="{% url 'frontend:services' %}" style="display: block;"><img src="{% static 'images/volunteer.png' %}" alt="Volunteer" style="height: 40px;">
+                <div class="bold">VOLUNTEER</div></a>{% else %}<a href="{% url 'accounts:register_organization_helper' %}" style="display: block;"><img src="{% static 'images/volunteer.png' %}" alt="Volunteer" style="height: 40px;">
+                <div class="bold">VOLUNTEER</div></a>{% endif %}</div>
           </div>
         </div>{% endif %}
         <hr>

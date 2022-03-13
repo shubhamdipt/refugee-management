@@ -57,6 +57,23 @@
       </div>
     </nav>
     <div id="content">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <h1>{{ registration_type }} registration</h1>
+          </div>
+        </div>{% if not request.user.is_authenticated %}
+        <div class="row">
+          <div class="col-sm-6">
+            <form method="POST">
+              {% csrf_token %}
+              {{ registration_form|crispy }}
+              <button class="btn btn-block btn-outline-success" type="submit">Register</button>
+            </form>
+          </div>
+        </div>{% else %}
+        <p class="alert">You are already registered.</p>{% endif %}
+      </div>
     </div>
     <footer class="bg-light">
       <div class="container py-5">

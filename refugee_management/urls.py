@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 from django.views.generic import TemplateView
@@ -28,10 +27,9 @@ sitemaps = {
 urlpatterns = [
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
-    path("login", LoginView.as_view(template_name="accounts/login.html"), name="login"),
-    path("logout", LogoutView.as_view(next_page="/login"), name="logout"),
     path("admin/", admin.site.urls),
     path("", include("frontend.urls")),
+    path("accounts/", include("accounts.urls")),
     path("locations/", include("locations.urls")),
     path("refugee/", include("refugee.urls")),
     path("volunteer/", include("volunteer.urls")),

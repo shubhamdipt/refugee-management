@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
+    "django.contrib.sites",
     # Libraries
     "crispy_forms",
     # Apps
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     "locations",
     "volunteer",
     "refugee",
+    "organization",
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,23 @@ TEMPLATES = [
 ]
 
 """########################################################################
+#######                    MAIL settings                             #####
+########################################################################"""
+
+# for local SMTP - FROM email setting
+DEFAULT_FROM_EMAIL = "admin@refugeecare.eu"
+
+# SMTP Email server settings
+if not DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_HOST = config.get("EMAIL_HOST")
+    EMAIL_PORT = int(config.get("EMAIL_PORT"))
+    EMAIL_HOST_USER = config.get("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = config.get("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = True
+
+"""########################################################################
 #######             File Handling + Storage                           #####
 ########################################################################"""
 
@@ -146,6 +165,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
 #######                             Others                           #####
 ########################################################################"""
 
+SITE_ID = 1
+
 CSRF_TRUSTED_ORIGINS = ["https://www.refugeecare.eu"]
 
 AUTH_USER_MODEL = "accounts.AccountUser"
@@ -154,5 +175,5 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "/login"
+LOGIN_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "/services"

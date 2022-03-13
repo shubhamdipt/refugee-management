@@ -1,13 +1,4 @@
 extends ./../layout.pug
-block extra_css
-    style.
-        .alert {
-            position: relative !important;
-            margin: 0 0 20px 0;
-        }
-        #formResult {
-            display: none;
-        }
 block content
     .container
         .row
@@ -21,7 +12,13 @@ block content
                     button.btn.btn-success(type="submit") Submit
         .row
             .col-sm-6
-                p.help-block
-                    | Are you a new user? &nbsp;
-                    span
-                        a(href="{% url 'frontend:home' %}") Register
+                .row
+                    .col-sm-6
+                        p.help-block
+                            | Are you a new user? &nbsp;
+                            span
+                                a(href="{% url 'frontend:home' %}") Register
+                    .col-sm-6.text-right
+                        p.help-block
+                            span
+                                a(href="{% url 'accounts:password_reset' %}") Forgot password
