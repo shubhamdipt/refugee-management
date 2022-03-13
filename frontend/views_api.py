@@ -33,7 +33,7 @@ def get_transfers(request):
         else:
             valid_routes_query = RouteCities.objects.filter(city_id=int(start_city or end_city))
             route_ids = [i.route.id for i in valid_routes_query.distinct("route__id")]
-        queryset = queryset.filter(route_id__in=route_ids)
+        queryset = queryset.filter(volunteer_route__route__id__in=route_ids)
 
     if seats and start_city and end_city:
         seats = int(seats)

@@ -33,7 +33,7 @@ block content
                                 option(value="{{ city.id }}") {{ city.name }}
                                 | {% endfor %}
                         .col
-                            select.select-autocomplete(name="seats", title="Seats", required)
+                            select.select-autocomplete(name="seats", title="Seats")
                                 option(value="1") 1
                                 option(value="2") 2
                                 option(value="3") 3
@@ -45,7 +45,7 @@ block content
                                 option(value="9") 9
                                 option(value="10") 10
                         .col
-                            input.form-control.date-picker(name="date", placeholder="Enter date", autocomplete="off", required)
+                            input.form-control.date-picker(name="date", placeholder="Enter date", autocomplete="off")
                         .col
                             button.btn.btn-dark(type="submit") Search
 
@@ -58,6 +58,7 @@ block content
                         tr
                             th Start time
                             th Route
+                            th Max seats
                             th
                     tbody#transfer-tbody
 
