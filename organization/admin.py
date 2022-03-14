@@ -17,8 +17,8 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 @admin.register(Helper)
 class HelperAdmin(admin.ModelAdmin):
-    list_display = ("id", "organization", "account_user", "account_type")
-    list_filter = ("account_type",)
+    list_display = ("id", "organization", "account_user", "account_type", "verified")
+    list_filter = ("account_type", "verified")
     search_fields = ("account_user__email", "organization__name")
 
 
@@ -41,7 +41,7 @@ class TransferAdmin(admin.ModelAdmin):
         "organization_route",
         "helper",
         "start_time",
-        "total_seats",
+        "refugee_seats",
         "active",
         "vehicle",
         "vehicle_registration_number",
@@ -52,4 +52,4 @@ class TransferAdmin(admin.ModelAdmin):
 
 @admin.register(TransferRouteDetails)
 class TransferRouteDetailsAdmin(admin.ModelAdmin):
-    list_display = ("id", "transfer", "pick_up_point", "departure_time")
+    list_display = ("id", "transfer", "city", "address", "departure_time")

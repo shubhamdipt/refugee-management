@@ -1,0 +1,258 @@
+<!DOCTYPE html>{% load static crispy_forms_tags %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="text/html; charset=UTF-8" name="Content-Type">
+    <link rel="shortcut icon" href="{% static 'images/logo/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo/apple-touch-icon.png' %}">
+    <!-- Facebook Card-->
+    <meta property="og:title" content="Refugee Management Service">
+    <meta property="og:url" content="https://www.refugeecare.eu">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
+    <meta property="og:image" content="{% static 'images/logo/apple-touch-icon.png' %}">
+    <!-- Twitter Card-->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Refugee Management Service">
+    <meta name="twitter:description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
+    <meta name="twitter:url" content="https://www.refugeecare.eu">
+    <meta name="twitter:image" content="{% static 'images/logo/apple-touch-icon.png' %}">
+    <meta name="robots" content="index, follow">
+    <title>Refugee Management</title>
+    <meta name="description" content="Refugee management services which are dedicated to connect refugees to volunteers.">
+    <!-- CSS-->
+    <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
+  </head>
+  <body>
+    <div class="alert alert-dismissible fade in text-center" id="formResult" role="alert">{{ form_message }}</div>{% if success %}
+    <div class="alert alert-success alert-dismissable form-success" role="alert" style="margin-bottom: 0px;">
+      <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ success }}
+    </div>{% endif %}
+    {% if error %}
+    <div class="alert alert-danger alert-dismissable form-error" role="alert">
+      <button class="close" type="button" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>{{ error }}
+    </div>{% endif %}
+    <nav class="navbar navbar-expand-lg navbar-dark"><a class="navbar-brand mb-0" href="/">Refugee Care</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <div class="navbar-nav">
+          <div class="nav-item"><a class="nav-link" href="{% url 'frontend:home' %}">Home</a></div>{% if request.user.is_authenticated %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'frontend:services' %}">Services</a></div>{% endif %}
+        </div>
+        <div class="navbar-nav ml-auto">
+          {% if request.user.is_authenticated %}
+          {% if request.user.is_staff %}
+          <div class="nav-item"><a class="nav-link" href="/admin">Admin</a></div>{% endif %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a></div>
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a></div>{% else %}
+          <div class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></div>{% endif %}
+        </div>
+      </div>
+    </nav>
+    <div id="content">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <h1>{{ helper.organization }}</h1>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>Pick up points</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <form id="data-form" method="POST" action="{% url 'organization:add_pick_up_point' %}">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button class="btn btn-dark btn-block" type="submit">Add pick up point</button>
+            </form>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="text-center" id="loading"><img src="{% static 'images/icons/Ripple-1s-200px.svg' %}"></div>
+            <table class="table table-bordered table-sm" id="data-table">
+              <thead>
+                <tr>
+                  <th>Country</th>
+                  <th>City</th>
+                  <th>Address</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="data-tbody">{% for obj in queryset %}
+                <tr>
+                  <td>{{ obj.city.country.name }}</td>
+                  <td>{{ obj.city.name }}</td>
+                  <td>{{ obj.address }}</td>
+                  <td></td>
+                </tr>{% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="bg-light">
+      <div class="container py-5">
+        <div class="row py-3">
+          <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+            <h6 class="text-uppercase font-weight-bold mb-4">About</h6>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><a class="text-muted" href="#">Contact Us</a></li>
+              <li class="mb-2"><a class="text-muted" href="#">About Us</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+            <h6 class="text-uppercase font-weight-bold mb-4">Policy</h6>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><a class="text-muted" href="{% url 'frontend:data_privacy' %}">Privacy</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+            <h6 class="text-uppercase font-weight-bold mb-4">Services</h6>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><a class="text-muted" href="/login">Login</a></li>
+              <li class="mb-2"><a class="text-muted" href="/">Register</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-6 mb-4 mb-lg-0"></div>
+          <div class="col-lg-4 col-md-6 mb-lg-0">
+            <p class="text-muted mb-0 py-2">© 2022 RefugeeCare</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <!-- JS should be towards the end to avoid render-block for content-->
+  <script src="{% static 'js/vendor/jquery/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'js/vendor/popper.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
+  <script src="{% static 'js/src/ajax_setup.js' %}"></script>
+  <script src="{% static 'js/src/main.js' %}"></script>
+  <script>
+    var loading = $("#loading");
+    var data_form = $("#data-form");
+    var data_table = $("#data-table");
+    var data_tbody = $("#data-tbody");
+    function clearForm() {
+        data_form.find('input, textarea').val('');
+    }
+    function get_objects() {
+        var html = '';
+        data_tbody.html(html);
+        loading.show();
+        data_table.hide();
+        $.get("/organization/api/get-pick-up-points").done(function (data) {
+            for (var i = 0; i < data.results.length ; i++) {
+                html += (
+                    "<tr>" +
+                    "<td>" + data.results[i].country + "</td>" +
+                    "<td>" + data.results[i].city + "</td>" +
+                    "<td>" + data.results[i].address + "</td>" +
+                    "<td><a class='delete-confirmation' href='/organization/delete-pick-up-point/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
+                    "<i class='fa fa-times-circle grey'></i></a></td></tr>"
+                );
+            }
+            if (html === '') {
+                html = "<tr><td colspan=4>No results found</td></tr>";
+            }
+            data_tbody.append(html);
+            data_table.show();
+            loading.hide();
+        })
+    };
+    function submitAjaxForm(e) {
+        var form = $(this);
+        var result = $('#formResult');
+        var loader = form.find('.ajaxLoader');
+        result.css('display', 'none');
+        loader.css('display', 'block');
+        e.preventDefault();
+        $.ajax({
+            data: form.serialize(),
+            type: 'POST',
+            url: form.attr('action'),
+            success: function (response, status) {
+                loader.css('display', 'none');
+                if (response.form) {
+                    form.find('.formFields').html(response.form);
+                    result.css('display', 'none');
+                    result.removeClass().addClass('formResult hidden');
+                    alertMessage();
+                }
+                if (response.success !== undefined) {
+                    result.removeClass().addClass('alert alert-success form-success');
+                    result.fadeIn("slow");
+                    alertMessage();
+                    if (form.hasClass("onlyOnce")) {
+                        form.find('input, textarea, select, button').prop("disabled", true);
+                    }
+                    clearForm();
+                    get_objects();
+                }
+                if (response.error !== undefined) {
+                    result.removeClass().addClass('alert alert-danger form-error');
+                    result.fadeIn("slow");
+                    alertMessage();
+                }
+                result.html(response.success === undefined ? response.error : response.success);
+                result.fadeIn("slow");
+            },
+            error: function (jqXHR, response) {
+                if (jqXHR.status === 500) {
+                    loader.css('display', 'none');
+                    result.removeClass().addClass('alert alert-danger form-error');
+                    result.html('Unknown server error! Please contact support or try again later.');
+                    result.fadeIn("slow");
+                }
+                if (jqXHR.status === 404 || jqXHR.status === 502) {
+                    loader.css('display', 'none');
+                    result.removeClass().addClass('alert alert-danger form-error');
+                    result.html('The server is currently unreachable. Please contact support or try again later.');
+                    result.fadeIn("slow");
+                }
+                result.html(response.message);
+                result.fadeIn("slow");
+            },
+            complete: function (status, response) {
+                result.fadeIn("slow");
+            }
+        });
+        return false;
+    }
+    $(function () {
+        get_objects();
+        data_form.submit(submitAjaxForm);
+    })
+  </script>{% if not request.user.is_superuser %}
+          <!-- Global site tag (gtag.js) - Google Analytics-->
+          <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
+          <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-GH7KMYE0E3');
+            
+          </script>{% else %}
+          <script>
+            ga = function () {
+                console.log('ga:', arguments);
+            };
+            
+          </script>{% endif %}
+</html>

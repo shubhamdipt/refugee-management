@@ -3,8 +3,8 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render, reverse
 
 from locations.models import City
+from organization.models import Helper
 from refugee.models import Refugee
-from volunteer.models import Volunteer
 
 
 def home(request):
@@ -16,11 +16,11 @@ def home(request):
 
 @login_required
 def services(request):
-    if Volunteer.objects.filter(account_user=request.user).first():
-        return redirect(reverse("volunteer:services"))
+    if Helper.objects.filter(account_user=request.user).first():
+        return redirect(reverse("organization:services"))
     elif Refugee.objects.filter(account_user=request.user).first():
         return redirect(reverse("refugee:services"))
-    return HttpResponseForbidden("Profile could not be found.")
+    return HttpResponseForbidden("Profile could not be found. It could be that the profile is still not verified.")
 
 
 def data_privacy(request):

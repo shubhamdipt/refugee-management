@@ -7,23 +7,56 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from locations.models import Route
-from refugee_management.custom_access import volunteer_access
-from volunteer.models import Transfer, TransferRouteDetails, VolunteerRoute
+from organization.forms import PickUpPointForm
+from organization.models import (
+    OrganizationPickUpPoint,
+    OrganizationRoute,
+    Transfer,
+    TransferRouteDetails,
+)
+from refugee_management.custom_access import (
+    organization_helper_access,
+    organization_helper_admin_access,
+)
 
 
-@volunteer_access()
-def get_transfers(request, volunteer):
+@organization_helper_admin_access()
+def get_pick_up_points(request, helper):
+    queryset = OrganizationPickUpPoint.objects.filter(organization=helper.organization).order_by(
+        "city__country__name", "city__name"
+    )
+    results = [
+        {"country": i.city.country.name, "city": i.city.name, "address": i.address, "id": i.id} for i in queryset
+    ]
+    return JsonResponse({"results": results})
+
+
+@organization_helper_admin_access()
+@require_POST
+def add_pick_up_point(request, helper):
+    ctx = {}
+    form = PickUpPointForm(request.POST)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.organization = helper.organization
+        obj.save()
+        ctx["success"] = "Pick up point has been successfully added."
+    return JsonResponse(ctx)
+
+
+@organization_helper_access()
+def get_transfers(request, helper):
     page = int(request.GET.get("page", 1))
-    queryset = Transfer.objects.filter(volunteer_route__volunteer=volunteer).order_by("-start_time")
+    queryset = Transfer.objects.filter(helper=helper).order_by("-start_time")
     paginator = Paginator(queryset, 25)
     selected_results = paginator.get_page(page)
     paginator_to_dict = [i.as_dict(show_details=True) for i in selected_results]
     return JsonResponse({"results": paginator_to_dict})
 
 
-@volunteer_access()
-def get_transfer_details(request, volunteer, transfer_id):
-    transfer = Transfer.objects.get(id=transfer_id, volunteer_route__volunteer=volunteer)
+@organization_helper_access()
+def get_transfer_details(request, helper, transfer_id):
+    transfer = Transfer.objects.get(id=transfer_id, helper=helper)
     ctx = {
         "details": list(
             TransferRouteDetails.objects.filter(transfer=transfer)
@@ -36,9 +69,9 @@ def get_transfer_details(request, volunteer, transfer_id):
 
 
 @transaction.atomic
-@volunteer_access()
+@organization_helper_access()
 @require_POST
-def add_transfer_service(request, volunteer):
+def add_transfer_service(request, helper):
     current_tz = timezone.get_current_timezone()
     try:
         transfer_refugees = request.POST.get("transfer-refugees")
@@ -77,10 +110,11 @@ def add_transfer_service(request, volunteer):
         if not vehicle_type:
             raise ValueError("Missing vehicle type.")
         route, _ = Route.objects.get_or_create_with_cities_ids(cities_ids=[i[0] for i in stopovers])
-        volunteer_route, _ = VolunteerRoute.objects.get_or_create(route=route, volunteer=volunteer)
+        organization_route, _ = OrganizationRoute.objects.get_or_create(route=route, organization=helper.organization)
         obj = Transfer.objects.create(
-            volunteer_route=volunteer_route,
-            total_seats=int(transfer_refugees),
+            organization_route=organization_route,
+            helper=helper,
+            refugee_seats=int(transfer_refugees),
             start_time=datetime_strings[0],
             vehicle=int(vehicle_type) if vehicle_type else None,
             vehicle_registration_number=vehicle_registration_number,

@@ -67,14 +67,19 @@ table {
 
 #formResult {
   position: fixed;
-  z-index: 10000;
   top: 120px;
   width: 70%;
   margin: 0 0 0 15%;
   text-align: center; }
 
+.popup-visible {
+  z-index: 10; }
+
 .alert {
   margin-bottom: 0; }
+
+.button-link {
+  display: block; }
 
 .filter-option-inner-inner {
   color: #262626; }

@@ -37,6 +37,7 @@ class Helper(models.Model):
         on_delete=models.CASCADE,
     )
     account_type = models.IntegerField(_("Account type"), choices=ACCOUNT_TYPES)
+    verified = models.BooleanField(_("Verified"), default=False)
 
     class Meta:
         verbose_name = _("Helper")
@@ -98,13 +99,47 @@ class Transfer(CreateUpdateModel):
         verbose_name=_("Organization route"),
         on_delete=models.CASCADE,
     )
-    helper = models.ForeignKey(Helper, verbose_name=_("Helper"), on_delete=models.SET_NULL, null=True, blank=True)
+    helper = models.ForeignKey(
+        Helper,
+        verbose_name=_("Helper"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="primary_helper",
+    )
+    secondary_helper = models.ForeignKey(
+        Helper,
+        verbose_name=_("Secondary Helper"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="secondary_helper",
+    )
     start_time = models.DateTimeField(_("Start time"), null=True, blank=True)
-    total_seats = models.IntegerField(_("Total seats"), validators=[MinValueValidator(1), MaxValueValidator(1000)])
+    refugee_seats = models.IntegerField(
+        _("Refugee seats"),
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+    )
+    helper_seats = models.IntegerField(
+        _("Helper seats"),
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(1000)],
+    )
+    driver_seats = models.IntegerField(
+        _("Driver seats"),
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+    )
     vehicle = models.IntegerField(_("Vehicle type"), choices=VEHICLE_CHOICES, null=True, blank=True)
     vehicle_registration_number = models.CharField(
         _("Vehicle registration number"), max_length=60, null=True, blank=True
     )
+    food = models.BooleanField(_("Food "), default=False)
+    drinks = models.BooleanField(_("Drinks"), default=False)
+    blanket = models.BooleanField(_("Blanket"), default=False)
+    healthcare = models.BooleanField(_("Healthcare personnel"), default=False)
+    description = models.TextField(_("Additional remarks"), null=True, blank=True)
     active = models.BooleanField(_("Active"), default=True)
 
     class Meta:
@@ -135,7 +170,7 @@ class Transfer(CreateUpdateModel):
         dict_obj = {
             "id": self.pk,
             "start_time": self.start_time.strftime("%d/%m/%Y %H:%M"),
-            "seats": self.total_seats,
+            "seats": self.refugee_seats,
             "route": self.stopovers_text,
             "active": self.active,
             "vehicle": self.get_vehicle_display(),
@@ -155,11 +190,15 @@ class TransferRouteDetails(models.Model):
         null=True,
         blank=True,
     )
-    pick_up_point = models.ForeignKey(
-        OrganizationPickUpPoint,
-        verbose_name=_("Pick up point"),
-        on_delete=models.CASCADE,
+    city = models.ForeignKey(
+        City,
+        verbose_name=_("City"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="org_transfer_city",
     )
+    address = models.CharField(_("Address"), max_length=255, null=True, blank=True)
     departure_time = models.DateTimeField(_("Departure time"))
 
     class Meta:

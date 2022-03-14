@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     "accounts",
     "frontend",
     "locations",
-    "volunteer",
+    "volunteer",  # TODO:  NOT IN USE at the moment
     "refugee",
     "organization",
 ]

@@ -1,0 +1,132 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-12
+                h1 {{ helper.organization }}
+        .row
+            .col-sm-12
+                h3 Pick up points
+        .row
+            .col-sm-6
+                form#data-form(method="POST", action="{% url 'organization:add_pick_up_point' %}")
+                    | {% csrf_token %}
+                    | {{ form|crispy }}
+                    button.btn.btn-dark.btn-block(type="submit") Add pick up point
+        hr
+        .row
+            .col-sm-12
+                #loading.text-center
+                    img(src="{% static 'images/icons/Ripple-1s-200px.svg' %}")
+                table#data-table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th Country
+                            th City
+                            th Address
+                            th
+                    tbody#data-tbody
+                        | {% for obj in queryset %}
+                        tr
+                            td {{ obj.city.country.name }}
+                            td {{ obj.city.name }}
+                            td {{ obj.address }}
+                            td
+                        | {% endfor %}
+
+block extra_js
+    script.
+        var loading = $("#loading");
+        var data_form = $("#data-form");
+        var data_table = $("#data-table");
+        var data_tbody = $("#data-tbody");
+        function clearForm() {
+            data_form.find('input, textarea').val('');
+        }
+        function get_objects() {
+            var html = '';
+            data_tbody.html(html);
+            loading.show();
+            data_table.hide();
+            $.get("/organization/api/get-pick-up-points").done(function (data) {
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += (
+                        "<tr>" +
+                        "<td>" + data.results[i].country + "</td>" +
+                        "<td>" + data.results[i].city + "</td>" +
+                        "<td>" + data.results[i].address + "</td>" +
+                        "<td><a class='delete-confirmation' href='/organization/delete-pick-up-point/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
+                        "<i class='fa fa-times-circle grey'></i></a></td></tr>"
+                    );
+                }
+                if (html === '') {
+                    html = "<tr><td colspan=4>No results found</td></tr>";
+                }
+                data_tbody.append(html);
+                data_table.show();
+                loading.hide();
+            })
+        };
+        function submitAjaxForm(e) {
+            var form = $(this);
+            var result = $('#formResult');
+            var loader = form.find('.ajaxLoader');
+            result.css('display', 'none');
+            loader.css('display', 'block');
+            e.preventDefault();
+            $.ajax({
+                data: form.serialize(),
+                type: 'POST',
+                url: form.attr('action'),
+                success: function (response, status) {
+                    loader.css('display', 'none');
+                    if (response.form) {
+                        form.find('.formFields').html(response.form);
+                        result.css('display', 'none');
+                        result.removeClass().addClass('formResult hidden');
+                        alertMessage();
+                    }
+                    if (response.success !== undefined) {
+                        result.removeClass().addClass('alert alert-success form-success');
+                        result.fadeIn("slow");
+                        alertMessage();
+                        if (form.hasClass("onlyOnce")) {
+                            form.find('input, textarea, select, button').prop("disabled", true);
+                        }
+                        clearForm();
+                        get_objects();
+                    }
+                    if (response.error !== undefined) {
+                        result.removeClass().addClass('alert alert-danger form-error');
+                        result.fadeIn("slow");
+                        alertMessage();
+                    }
+                    result.html(response.success === undefined ? response.error : response.success);
+                    result.fadeIn("slow");
+                },
+                error: function (jqXHR, response) {
+                    if (jqXHR.status === 500) {
+                        loader.css('display', 'none');
+                        result.removeClass().addClass('alert alert-danger form-error');
+                        result.html('Unknown server error! Please contact support or try again later.');
+                        result.fadeIn("slow");
+                    }
+                    if (jqXHR.status === 404 || jqXHR.status === 502) {
+                        loader.css('display', 'none');
+                        result.removeClass().addClass('alert alert-danger form-error');
+                        result.html('The server is currently unreachable. Please contact support or try again later.');
+                        result.fadeIn("slow");
+                    }
+                    result.html(response.message);
+                    result.fadeIn("slow");
+                },
+                complete: function (status, response) {
+                    result.fadeIn("slow");
+                }
+            });
+            return false;
+        }
+        $(function () {
+            get_objects();
+            data_form.submit(submitAjaxForm);
+        })

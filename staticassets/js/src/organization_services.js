@@ -42,7 +42,7 @@ function get_transfers() {
     transfers_tbody.html(html);
     loading.show();
     transfers_table.hide();
-    $.get("/volunteer/api/get-transfers").done(function (data) {
+    $.get("/organization/api/get-transfers").done(function (data) {
         for (var i = 0; i < data.results.length ; i++) {
             html += (
                 "<tr>" +
@@ -93,7 +93,6 @@ function submitTransfer(e) {
             if (response.success !== undefined) {
                 result.removeClass().addClass('alert alert-success form-success');
                 result.fadeIn("slow");
-                response.addClass('popup-visible');
                 alertMessage();
                 if (form.hasClass("onlyOnce")) {
                     form.find('input, textarea, select, button').prop("disabled", true);
@@ -105,7 +104,6 @@ function submitTransfer(e) {
             if (response.error !== undefined) {
                 result.removeClass().addClass('alert alert-danger form-error');
                 result.fadeIn("slow");
-                response.addClass('popup-visible');
                 alertMessage();
             }
 
@@ -138,7 +136,7 @@ function submitTransfer(e) {
 function get_transfer_details(transfer_id) {
     transfer_details_tbody.html('');
     var html = ''
-    $.get('/volunteer/api/get-transfer-details/' + transfer_id).done(function(data){
+    $.get('/organization/api/get-transfer-details/' + transfer_id).done(function(data){
         for (var i = 0; i < data.details.length ; i++) {
             html += "<tr>" +
                 "<td>" + (i+1) + "</td>" +
