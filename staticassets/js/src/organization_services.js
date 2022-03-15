@@ -8,7 +8,6 @@ function get_transfer_details(url, transfer_id) {
     transfer_route_details_tbody.html(html);
     seat_availability_tbody.html(seat_html);
     $.get(url + transfer_id).done(function(data){
-        console.log(data);
         for([key, val] of Object.entries(data.object)) {
             $("#" + key).html(clean_value(val));
         }
