@@ -100,6 +100,21 @@ function sendAjaxRequest(e) {
     return false;
 }
 
+function clean_key(text) {
+    return text.replace('_', ' ').replace(/(^|\s)\S/g, function(t) { return t.toUpperCase() });
+}
+function clean_value(text) {
+    var output = text;
+    if (text === null) {
+        output = "";
+    } else if (text === true) {
+        output = "<i class='fa fa-check-circle'></i>";
+    } else if (text === false) {
+        output = "<i class='fa fa-times-circle'></i>";
+    }
+    return output;
+}
+
 $(function () {
     $('.ajaxForm').submit(sendAjaxRequest);
     $('.time-picker').datetimepicker({

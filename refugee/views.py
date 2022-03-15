@@ -26,6 +26,8 @@ def reserve_transfer(request, refugee, transfer_id):
     city_combinations = list(itertools.combinations([str(i.city) for i in transfer.stopovers], 2))
     for from_city, to_city in city_combinations:
         availabilities.append((from_city, to_city, available_seats.get((from_city, to_city))))
+    route_details = [(i["departure_time"], i["city"], i["address"]) for i in seats_management.route_details]
+    transfer_properties = transfer.as_dict().items()
 
     form = TransferReservationForm(transfer=transfer, refugee=refugee)
     if request.method == "POST":
@@ -42,7 +44,15 @@ def reserve_transfer(request, refugee, transfer_id):
             )
             return redirect(reverse("refugee:services"))
     return render(
-        request, "refugee/transfer_reservation.html", {"form": form, "transfer": transfer, "seats": availabilities}
+        request,
+        "refugee/transfer_reservation.html",
+        {
+            "form": form,
+            "transfer": transfer,
+            "seats": availabilities,
+            "route": route_details,
+            "transfer_properties": transfer_properties,
+        },
     )
 
 

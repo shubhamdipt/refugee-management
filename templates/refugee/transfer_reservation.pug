@@ -3,7 +3,7 @@ block content
     .container
         .row
             .col-sm-12
-                h1 Make transfer reservation
+                h1 Transfer reservation
         .row
             .col-sm-12
                 h5(style="color: darkgrey;") {{ transfer.stopovers_text }}
@@ -14,17 +14,36 @@ block content
                     | {{ form|crispy }}
                     button.btn.btn-dark.btn-block(type="submit") Submit
             .col-sm-6
-                h5 Available seats
-                table.table.table-sm.table-bordered(style="color: #6e6e6e;")
-                    thead
-                        tr
-                            th From
-                            th To
-                            th Seats
-                    tbody
-                        | {% for from_city, to_city, count in seats %}
-                        tr
-                            td {{ from_city }}
-                            td {{ to_city }}
-                            td {{ count }}
-                        | {% endfor %}
+                .row
+                    .col-sm-12
+                        h5 Route
+                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
+                            thead
+                                tr
+                                    th Time
+                                    th City
+                                    th Pick up point
+                            tbody
+                                | {% for time, city, address in route %}
+                                tr
+                                    td {{ time }}
+                                    td {{ city }}
+                                    td {{ address }}
+                                | {% endfor %}
+                hr
+                .row
+                    .col-sm-12
+                        h5 Available seats
+                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
+                            thead
+                                tr
+                                    th From
+                                    th To
+                                    th Seats
+                            tbody
+                                | {% for from_city, to_city, count in seats %}
+                                tr
+                                    td {{ from_city }}
+                                    td {{ to_city }}
+                                    td {{ count }}
+                                | {% endfor %}

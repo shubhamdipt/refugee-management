@@ -1,24 +1,16 @@
 var loading = $("#loading");
-var transfer_details_tbody = $("#transfer-details-tbody");
 var transfer_route_details_tbody = $("#transfer-route-details-tbody");
+var seat_availability_tbody = $("#seat-availability-tbody");
 
-function clean_key(text) {
-    return text.replace('_', ' ').replace(/(^|\s)\S/g, function(t) { return t.toUpperCase() });
-}
-function clean_value(text) {
-    return text === null ? "" : text;
-}
 function get_transfer_details(url, transfer_id) {
-    transfer_details_tbody.html('');
-    transfer_route_details_tbody.html('');
-    var html = ''
-    var details_html = ''
+    var html = '';
+    var seat_html = "";
+    transfer_route_details_tbody.html(html);
+    seat_availability_tbody.html(seat_html);
     $.get(url + transfer_id).done(function(data){
+        console.log(data);
         for([key, val] of Object.entries(data.object)) {
-            details_html += "<tr>" +
-                "<td>" + clean_key(key) + "</td>" +
-                "<td>" + clean_value(val) + "</td>" +
-                "</tr>";
+            $("#" + key).html(clean_value(val));
         }
         for (var i = 0; i < data.details.length ; i++) {
             html += "<tr>" +
@@ -28,8 +20,14 @@ function get_transfer_details(url, transfer_id) {
                 "<td>" + data.details[i].address + "</td>" +
                 "</tr>";
         }
+        for (var j = 0; j < data.seats_availability.length ; j++) {
+            seat_html += "<tr>" +
+                "<td>" + data.seats_availability[j][0] + " -> " + data.seats_availability[j][1] + "</td>" +
+                "<td>" + data.seats_availability[j][2] + "</td>" +
+                "</tr>";
+        }
         transfer_route_details_tbody.append(html);
-        transfer_details_tbody.append(details_html);
+        seat_availability_tbody.append(seat_html);
         $('#transferDetailsModal').modal('show');
     })
 }
@@ -40,5 +38,5 @@ $(document).on('click', '.transfer-details', function(e){
 });
 $(document).on('click', '.organization-transfer-details', function(e){
     e.preventDefault();
-    get_transfer_details('/organization/api/get-organization-transfer-details/', $(this).attr('data-transfer-id'));
+    get_transfer_details('/organization/api/get-transfer-details/', $(this).attr('data-transfer-id'));
 });

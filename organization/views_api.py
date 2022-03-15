@@ -1,8 +1,8 @@
+import itertools
 from datetime import datetime
 
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
-from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
@@ -16,6 +16,7 @@ from organization.models import (
     Transfer,
     TransferRouteDetails,
 )
+from organization.seats_management import SeatsManagement
 from refugee_management.custom_access import (
     organization_helper_access,
     organization_helper_admin_access,
@@ -44,7 +45,7 @@ def get_helpers(request, helper):
 @require_POST
 def add_pick_up_point(request, helper):
     ctx = {}
-    form = PickUpPointForm(request.POST)
+    form = PickUpPointForm(data=request.POST, helper=helper)
     if form.is_valid():
         obj = form.save(commit=False)
         obj.organization = helper.organization
@@ -56,19 +57,29 @@ def add_pick_up_point(request, helper):
 @organization_helper_access()
 def get_transfers(request, helper):
     queryset = Transfer.objects.filter(helper=helper).order_by("-start_time")
-    results = [i.as_dict(show_details=True) for i in queryset]
+    results = [i.as_dict(helper_view=True) for i in queryset]
     return JsonResponse({"results": results})
 
 
 @organization_helper_access()
 def get_transfer_details(request, helper, transfer_id):
+    ctx = {}
     transfer = Transfer.objects.get(id=transfer_id, helper=helper)
-    ctx = {
-        "object": transfer.as_dict(show_details=True),
-        "details": [
+    # Validating proper access to a transfer
+    if transfer.helper == helper or (
+        helper.account_type == Helper.ADMIN and helper.organization == transfer.organization_route.organization
+    ):
+        availabilities = []
+        seats_management = SeatsManagement(transfer=transfer)
+        available_seats = seats_management.determine_available_seats(return_by_name=True)
+        city_combinations = list(itertools.combinations([str(i.city) for i in transfer.stopovers], 2))
+        for from_city, to_city in city_combinations:
+            availabilities.append((from_city, to_city, available_seats.get((from_city, to_city))))
+        ctx["seats_availability"] = availabilities
+        ctx["object"] = transfer.as_dict(helper_view=True)
+        ctx["details"] = [
             i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=transfer).order_by("departure_time")
-        ],
-    }
+        ]
     return JsonResponse(ctx)
 
 
@@ -76,7 +87,7 @@ def get_transfer_details(request, helper, transfer_id):
 def get_organization_transfer_details(request, helper, transfer_id):
     transfer = Transfer.objects.get(id=transfer_id, organization_route__organization=helper.organization)
     ctx = {
-        "object": transfer.as_dict(show_details=True),
+        "object": transfer.as_dict(helper_view=True),
         "details": [
             i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=transfer).order_by("departure_time")
         ],
@@ -88,7 +99,6 @@ def get_organization_transfer_details(request, helper, transfer_id):
 @organization_helper_admin_access()
 @require_POST
 def create_new_transfer(request, helper):
-    current_tz = timezone.get_current_timezone()
     try:
         stopovers_details = []
         count = 1

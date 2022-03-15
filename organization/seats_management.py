@@ -8,7 +8,9 @@ class SeatsManagement:
     def __init__(self, transfer: Transfer):
         self.transfer = transfer
         self.refugee_seats = transfer.refugee_seats
-        self.cities = [(i.city.id, count + 1, str(i.city)) for count, i in enumerate(transfer.stopovers)]
+        self.stopovers = list(transfer.stopovers)
+        self.route_details = [i.as_dict() for i in self.stopovers]
+        self.cities = [(i.city.id, count + 1, str(i.city)) for count, i in enumerate(self.stopovers)]
 
     def _replace_order_by_city_id(self, available_seats: dict):
         city_order = {i[1]: i[0] for i in self.cities}

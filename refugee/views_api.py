@@ -1,4 +1,3 @@
-from django.core.paginator import Paginator
 from django.http import JsonResponse
 
 from organization.models import TransferRouteDetails
@@ -13,11 +12,8 @@ def get_transfers(request, refugee):
         .select_related("transfer")
         .order_by("-transfer__start_time")
     )
-    page = int(request.GET.get("page", 1))
-    paginator = Paginator(queryset, 25)
-    selected_results = paginator.get_page(page)
-    paginator_to_dict = [i.as_dict() for i in selected_results]
-    return JsonResponse({"results": paginator_to_dict})
+    results = [i.as_dict() for i in queryset]
+    return JsonResponse({"results": results})
 
 
 @refugee_access()
@@ -27,16 +23,20 @@ def get_transfer_reservation_details(request, refugee, reservation_id):
         .select_related("from_city__city", "to_city__city")
         .first()
     )
-    complete_transfer_details = [
-        i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=reservation.transfer)
-    ]
     details = []
     valid = False
-    for i in complete_transfer_details:
-        if i["city_id"] == reservation.from_city.city.id:
+    for location in TransferRouteDetails.objects.filter(transfer=reservation.transfer).order_by("departure_time"):
+        if location.city.id == reservation.from_city.city.id:
             valid = True
         if valid:
-            details.append(i)
-        if i["city_id"] == reservation.to_city.city.id:
+            details.append(location.as_dict())
+        if location.city.id == reservation.to_city.city.id:
             break
-    return JsonResponse({"details": details})
+    return JsonResponse(
+        {
+            "details": details,
+            "transfer": reservation.transfer.as_dict(helper_view=True, refugee_view=True),
+            "reservation_id": reservation.id,
+            "seats": reservation.seats,
+        }
+    )

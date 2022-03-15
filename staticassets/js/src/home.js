@@ -25,7 +25,7 @@ function get_transfers(check_form) {
             );
         }
         if (html === '') {
-            html = "<tr><td colspan=3>No results found</td></tr>";
+            html = "<tr><td colspan=4>No results found</td></tr>";
         }
         transfer_body.append(html);
         transfer_table.show();

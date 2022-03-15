@@ -207,26 +207,34 @@ class Transfer(CreateUpdateModel):
         cities = [str(i.city) for i in self.stopovers]
         return f"{cities[0]} -> {cities[-1]}"
 
-    def as_dict(self, show_details=False):
+    def as_dict(self, helper_view=False, refugee_view=False):
         dict_obj = {
             "id": self.pk,
-            "organization": self.organization_route.organization.name,
-            "helper": self.helper.account_user.email if self.helper else None,
-            "secondary_helper": self.secondary_helper.email if self.secondary_helper else None,
-            "start_time": timezone.localtime(self.start_time).strftime("%d/%m/%Y %H:%M") if self.start_time else None,
             "refugee_seats": self.refugee_seats,
             "food": self.food,
             "drinks": self.drinks,
+            "blanket": self.blanket,
             "healthcare": self.healthcare,
-            "description": self.description,
+            "translators": self.translators,
             "route": self.stopovers_text,
-            "active": self.active,
+            "start_time": timezone.localtime(self.start_time).strftime("%d/%m/%Y %H:%M") if self.start_time else None,
         }
-        if show_details:
-            dict_obj["helper_seats"] = self.helper_seats
-            dict_obj["driver_seats"] = self.driver_seats
-            dict_obj["vehicle"] = self.get_vehicle_display() if self.vehicle else None
-            dict_obj["vehicle_registration_number"] = self.vehicle_registration_number
+        hidden_dict = {}
+        if helper_view:
+            hidden_dict = {
+                "organization": self.organization_route.organization.name,
+                "helper": self.helper.account_user.email if self.helper else None,
+                "secondary_helper": self.secondary_helper.email if self.secondary_helper else None,
+                "helper_seats": self.helper_seats,
+                "driver_seats": self.driver_seats,
+                "vehicle": self.get_vehicle_display() if self.vehicle else None,
+                "vehicle_registration_number": self.vehicle_registration_number,
+                "description": self.description,
+            }
+        dict_obj = {**dict_obj, **hidden_dict}
+        if refugee_view:
+            hidden_fields = ["id", "helper_seats", "driver_seats", "description"]
+            dict_obj = {k: v for k, v in dict_obj.items() if k not in hidden_fields}
         return dict_obj
 
 

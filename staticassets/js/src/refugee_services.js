@@ -1,8 +1,7 @@
 var loading = $("#loading");
-var transfer_page = 1;
 var transfers_table = $("#transfers-table");
 var transfers_tbody = $("#transfers-tbody");
-var transfer_details_tbody = $("#transfer-details-tbody");
+var transfer_route_details_tbody = $("#transfer-route-details-tbody");
 
 function get_transfers() {
     var html = '';
@@ -28,19 +27,23 @@ function get_transfers() {
         loading.hide();
     })
 }
-function get_transfer_reervation_details(reservation_id) {
-    transfer_details_tbody.html('');
-    var html = ''
+function get_transfer_reservation_details(reservation_id) {
+    transfer_route_details_tbody.html('');
+    var html = '';
     $.get('/refugee/api/get-transfer-reservation-details/' + reservation_id).done(function(data){
+        $("#seats").html(clean_value(data.seats));
+        for([key, val] of Object.entries(data.transfer)) {
+            $("#" + key).html(clean_value(val));
+        }
         for (var i = 0; i < data.details.length ; i++) {
             html += "<tr>" +
                 "<td>" + (i+1) + "</td>" +
-                "<td>" + data.details[i].departure_date_string + "</td>" +
-                "<td>" + data.details[i].city__name + "</td>" +
+                "<td>" + data.details[i].departure_time + "</td>" +
+                "<td>" + data.details[i].city + "</td>" +
                 "<td>" + data.details[i].address + "</td>" +
                 "</tr>";
         }
-        transfer_details_tbody.append(html);
+        transfer_route_details_tbody.append(html);
         $('#transferDetailsModal').modal('show');
     })
 }
@@ -50,5 +53,5 @@ $(function () {
 })
 $(document).on('click', '.reservation-details', function(e){
     e.preventDefault();
-    get_transfer_reervation_details($(this).attr('data-reservation-id'));
+    get_transfer_reservation_details($(this).attr('data-reservation-id'));
 });

@@ -10,7 +10,6 @@ from refugee.models import TransferReservation
 
 class TransferReservationForm(forms.Form):
     transfer_id = forms.IntegerField(widget=forms.HiddenInput())
-    start_time = forms.CharField(label=_("Start time"))
     from_city = forms.ChoiceField(label=_("From"))
     to_city = forms.ChoiceField(label=_("To"))
     seats = forms.IntegerField(label=_("Number of seats"))
@@ -21,8 +20,6 @@ class TransferReservationForm(forms.Form):
         self.fields["from_city"].choices = stopovers_choices
         self.fields["to_city"].choices = stopovers_choices
         self.fields["transfer_id"].initial = transfer.id
-        self.fields["start_time"].initial = transfer.start_time
-        self.fields["start_time"].disabled = True
         self.refugee = refugee
 
     def clean(self):
@@ -38,24 +35,21 @@ class TransferReservationForm(forms.Form):
         if from_city and to_city:
             # Only do something if both fields are valid so far.
             if from_city == to_city:
-                raise ValidationError("From city and to city cannot be the same.")
+                raise ValidationError(_("From city and to city cannot be the same."))
             if cities_order[from_city] >= cities_order[to_city]:
-                raise ValidationError("From city cannot be after to city in the route.")
+                raise ValidationError(_("'From city' cannot be after 'to city' in the route."))
         else:
-            raise ValidationError("Both from city and to city are required.")
+            raise ValidationError(_("Both from city and to city are required."))
 
         seat_management = SeatsManagement(transfer=transfer)
         seats_available = seat_management.determine_available_seats().get((from_city, to_city))
         if seats < 1:
-            raise ValidationError("At least one seat is required for a reservation.")
+            raise ValidationError(_("At least one seat is required for a reservation."))
         if seats_available < seats:
             raise ValidationError(f"Only {seats_available} left for this trip.")
 
         if (
-                TransferReservation.objects.filter(
-                    refugee=self.refugee,
-                    transfer__start_time__gt=timezone.now()
-                ).count()
-                > 0
+            TransferReservation.objects.filter(refugee=self.refugee, transfer__start_time__gt=timezone.now()).count()
+            > 0
         ):
-            raise ValidationError("Multiple active reservations are not allowed.")
+            raise ValidationError(_("Multiple active reservations are not allowed."))

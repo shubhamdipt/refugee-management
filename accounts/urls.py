@@ -15,7 +15,7 @@ app_name = "accounts"
 urlpatterns = [
     path("activate/<uidb64>/<token>", ActivateAccount.as_view(), name="activate"),
     path("login", LoginView.as_view(template_name="accounts/login.html"), name="login"),
-    path("logout", LogoutView.as_view(next_page="/login"), name="logout"),
+    path("logout", LogoutView.as_view(next_page=reverse_lazy("accounts:login")), name="logout"),
     path("profile", AccountEdit.as_view(), name="profile"),
     path(
         "password-reset",

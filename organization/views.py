@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render, reverse
@@ -36,7 +38,7 @@ def manage_pick_up_points(request, helper):
     return render(
         request,
         "organization/pick_up_points.html",
-        {"helper": helper, "form": PickUpPointForm()},
+        {"helper": helper, "form": PickUpPointForm(helper=helper)},
     )
 
 
@@ -57,24 +59,37 @@ class EditView(View):
     form = None
     object_type = None
 
+    @staticmethod
+    def is_valid_organization(obj: Union[Helper, OrganizationPickUpPoint, Transfer], helper: Helper):
+        if isinstance(obj, Helper) or isinstance(obj, OrganizationPickUpPoint):
+            return obj.organization == helper.organization
+        elif isinstance(obj, Transfer):
+            return obj.organization_route.organization == helper.organization
+        return
+
     @method_decorator(organization_helper_admin_access())
     def get(self, request, helper, object_id, *args, **kwargs):
         obj = self.model.objects.get(id=object_id)
-        if obj.organization != helper.organization:
+        if not self.is_valid_organization(obj, helper):
             return HttpResponse("Unauthorized Access", status=401)
         return render(
             request,
             self.template,
-            {"form": self.form(instance=obj), "helper": helper, "object_type": self.object_type, "object": obj},
+            {
+                "form": self.form(instance=obj, helper=helper),
+                "helper": helper,
+                "object_type": self.object_type,
+                "object": obj,
+            },
         )
 
     @method_decorator(organization_helper_admin_access())
     def post(self, request, helper, object_id, *args, **kwargs):
         ctx = {}
         obj = self.model.objects.get(id=object_id)
-        if obj.organization != helper.organization:
+        if not self.is_valid_organization(obj, helper):
             return HttpResponse("Unauthorized Access", status=401)
-        form = self.form(data=request.POST, instance=obj)
+        form = self.form(data=request.POST, instance=obj, helper=helper)
         if form.is_valid():
             form.save()
             ctx["success"] = _("The form has been successfully submitted.")

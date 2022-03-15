@@ -139,7 +139,7 @@ TEMPLATES = [
 DEFAULT_FROM_EMAIL = "admin@refugeecare.eu"
 
 # SMTP Email server settings
-if not DEBUG:
+if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     EMAIL_HOST = config.get("EMAIL_HOST")

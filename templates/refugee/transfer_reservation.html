@@ -60,7 +60,7 @@
       <div class="container">
         <div class="row">
           <div class="col-sm-12">
-            <h1>Make transfer reservation</h1>
+            <h1>Transfer reservation</h1>
           </div>
         </div>
         <div class="row">
@@ -77,28 +77,55 @@
             </form>
           </div>
           <div class="col-sm-6">
-            <h5>Available seats</h5>
-            <table class="table table-sm table-bordered" style="color: #6e6e6e;">
-              <thead>
-                <tr>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>Seats</th>
-                </tr>
-              </thead>
-              <tbody>{% for from_city, to_city, count in seats %}
-                <tr>
-                  <td>{{ from_city }}</td>
-                  <td>{{ to_city }}</td>
-                  <td>{{ count }}</td>
-                </tr>{% endfor %}
-              </tbody>
-            </table>
+            <div class="row">
+              <div class="col-sm-12">
+                <h5>Route</h5>
+                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>City</th>
+                      <th>Pick up point</th>
+                    </tr>
+                  </thead>
+                  <tbody>{% for time, city, address in route %}
+                    <tr>
+                      <td>{{ time }}</td>
+                      <td>{{ city }}</td>
+                      <td>{{ address }}</td>
+                    </tr>{% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12">
+                <h5>Available seats</h5>
+                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Seats</th>
+                    </tr>
+                  </thead>
+                  <tbody>{% for from_city, to_city, count in seats %}
+                    <tr>
+                      <td>{{ from_city }}</td>
+                      <td>{{ to_city }}</td>
+                      <td>{{ count }}</td>
+                    </tr>{% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <footer class="bg-light">
+      <hr>
       <div class="container py-5">
         <div class="row py-3">
           <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">

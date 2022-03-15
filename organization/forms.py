@@ -11,6 +11,9 @@ class PickUpPointForm(forms.ModelForm):
         model = OrganizationPickUpPoint
         fields = ("city", "address")
 
+    def __init__(self, helper: Helper, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 class HelperForm(forms.ModelForm):
     read_only_fields = ("organization", "account_user")
@@ -19,7 +22,7 @@ class HelperForm(forms.ModelForm):
         model = Helper
         fields = ("organization", "account_user", "account_type", "verified")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, helper: Helper, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.read_only_fields:
             self.fields[field].disabled = True
@@ -46,6 +49,7 @@ class TransferForm(forms.ModelForm):
             "drinks",
             "blanket",
             "healthcare",
+            "translators",
             "description",
         )
 

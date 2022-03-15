@@ -1,8 +1,8 @@
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
-from organization.forms import HelperForm, PickUpPointForm
-from organization.models import Helper, OrganizationPickUpPoint
+from organization.forms import HelperForm, PickUpPointForm, TransferForm
+from organization.models import Helper, OrganizationPickUpPoint, Transfer
 from organization.views import (
     EditView,
     add_transfer,
@@ -16,7 +16,6 @@ from organization.views_api import (
     add_pick_up_point,
     create_new_transfer,
     get_helpers,
-    get_organization_transfer_details,
     get_pick_up_points,
     get_transfer_details,
     get_transfers,
@@ -39,6 +38,11 @@ urlpatterns = [
         EditView.as_view(model=Helper, form=HelperForm, object_type=_("Helper")),
         name="edit_helper",
     ),
+    path(
+        "edit-transfer/<int:object_id>",
+        EditView.as_view(model=Transfer, form=TransferForm, object_type=_("Transfer")),
+        name="edit_transfer",
+    ),
     path("add-transfer", add_transfer, name="add_transfer"),
     # APIs
     path("api/get-helpers", get_helpers, name="get_helpers"),
@@ -48,9 +52,4 @@ urlpatterns = [
     #
     path("api/get-transfers", get_transfers, name="get_transfers"),
     path("api/get-transfer-details/<int:transfer_id>", get_transfer_details, name="get_transfer_details"),
-    path(
-        "api/get-organization-transfer-details/<int:transfer_id>",
-        get_organization_transfer_details,
-        name="get_organization_transfer_details",
-    ),
 ]
