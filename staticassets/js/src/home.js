@@ -19,7 +19,7 @@ function get_transfers(check_form) {
                 "<tr>" +
                 "<td>" + data.results[i].start_time + "</td>" +
                 "<td>" + data.results[i].route + "</td>" +
-                "<td>" + data.results[i].seats + "</td>" +
+                "<td>" + data.results[i].refugee_seats + "</td>" +
                 "<td><a href='/refugee/reserve-transfer/" + data.results[i].id + "' data-confirm='Are you sure you want to reserve?'>" +
                 "<button class='btn btn-sm btn-outline-success'>Reserve</button></a></td></tr>"
             );

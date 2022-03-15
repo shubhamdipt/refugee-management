@@ -28,7 +28,7 @@ a.nav-link {
   min-height: 1000px; }
 
 h1, h2 {
-  margin: 0 0 15px 0 !important; }
+  margin: 0 0 50px 0 !important; }
 
 .fa-check-circle {
   color: green; }
@@ -70,7 +70,9 @@ table {
   top: 120px;
   width: 70%;
   margin: 0 0 0 15%;
-  text-align: center; }
+  text-align: center;
+  z-index: 10;
+  display: none; }
 
 .popup-visible {
   z-index: 10; }
@@ -78,10 +80,23 @@ table {
 .alert {
   margin-bottom: 0; }
 
-.button-link {
-  display: block; }
+a.button-link {
+  display: block;
+  color: #2c2c2c; }
+  a.button-link:hover {
+    color: black; }
 
 .filter-option-inner-inner {
   color: #262626; }
+
+.bootstrap-select {
+  width: auto !important;
+  min-width: 220px; }
+
+.organization-box {
+  padding: 7px 12px;
+  border: 1px grey solid;
+  font-size: 15px;
+  float: right; }
 
 /*# sourceMappingURL=styles.css.map */

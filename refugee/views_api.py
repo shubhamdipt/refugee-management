@@ -1,9 +1,9 @@
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
+from organization.models import TransferRouteDetails
 from refugee.models import TransferReservation
 from refugee_management.custom_access import refugee_access
-from volunteer.models import TransferRouteDetails
 
 
 @refugee_access()
@@ -27,12 +27,9 @@ def get_transfer_reservation_details(request, refugee, reservation_id):
         .select_related("from_city__city", "to_city__city")
         .first()
     )
-    complete_transfer_details = list(
-        TransferRouteDetails.objects.filter(transfer=reservation.transfer)
-        .extra(select={"departure_date_string": "to_char(departure_time, 'DD/MM/YYY HH24:MI:SS')"})
-        .values("id", "city__name", "city_id", "address", "departure_date_string")
-        .order_by("departure_time")
-    )
+    complete_transfer_details = [
+        i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=reservation.transfer)
+    ]
     details = []
     valid = False
     for i in complete_transfer_details:

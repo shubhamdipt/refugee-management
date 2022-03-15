@@ -2,19 +2,31 @@ extends ./../layout.pug
 block content
     .container
         .row
-            .col-sm-8
-                h1
-                    | Welcome &nbsp;
-                    span(style="font-weight: normal; font-size: 20px; font-style: italic;") {{ request.user.email }} &nbsp;
-                    span(style="font-weight: bold; font-size: 15px; color:darkgreen;") (HELPER)
-                p Please select the appropriate service below.
+            .col-sm-6.offset-sm-6
+                .organization-box {{ helper.organization }}
+        .row
+            .col-sm-5
+                h2
+                    | Welcome!
+        .row
+            .col-sm-5
+                span(style="font-weight: normal; font-size: 20px; font-style: italic;") {{ request.user.email }} &nbsp;
+                span(style="font-weight: bold; font-size: 15px; color:darkgreen;") (HELPER)
             | {% if admin %}
-            .col-sm-4
+            .col-sm-7
                 .text-right
                     button.btn.btn-default
-                        a.button-link(href="{% url 'organization:manage_pick_up_points' %}") Manage Pick up points
+                        a.button-link(href="{% url 'organization:add_transfer' %}")
+                            | Add transfer &nbsp;
+                            .fa.fa-plus
                     button.btn.btn-default
-                        a.button-link(href="#") Manage Helpers
+                        a.button-link(href="{% url 'organization:manage_pick_up_points' %}")
+                            | Pick up points &nbsp;
+                            .fa.fa-gear
+                    button.btn.btn-default
+                        a.button-link(href="{% url 'organization:manage_helpers' %}")
+                            | Helpers &nbsp;
+                            .fa.fa-gear
             | {% endif %}
         hr
         .row
@@ -27,82 +39,47 @@ block content
                                     | Transfer
                         #collapseOne.collapse.show(aria-labelledby='serviceOne' data-parent='#accordion')
                             .card-body
-                                div(style="width: 100%;")
-                                    h5 Add transfer details
-                                    form#transferForm(method="POST", action="{% url 'organization:add_transfer_service' %}")
-                                        .row
-                                            .col-sm-12
-                                                | {% csrf_token %}
-                                                .row
-                                                    .col-sm-4
-                                                        .row
-                                                            .col-sm-12
-                                                                .form-group
-                                                                    select.select-autocomplete(name="vehicle_type", title="Vehicle type" required)
-                                                                        | {% for val, name in vehicle_types %}
-                                                                        option(value="{{ val }}") {{ name }}
-                                                                        | {% endfor %}
-                                                        .row
-                                                            .col-sm-12
-                                                                .form-group
-                                                                    input.form-control(name="vehicle_registration_number", value="", type="text", placeholder="Vehicle registration number", autocomplete="off")
-                                                        .row
-                                                            .col-sm-12
-                                                                .form-group
-                                                                    input.form-control(name="transfer-refugees", value="", type="number", placeholder="Number of passengers", autocomplete="off", required)
-                                                .row
-                                                    .col-sm-12
-                                                        .row
-                                                            .col-sm-6
-                                                                button#add-stop.btn.btn-sm.btn-outline-default
-                                                                    | Add stop &nbsp;
-                                                                    .fa.fa-plus
-                                                            .col-sm-6
-                                                                button#reset.btn.btn-sm.btn-outline-default(style="float: right;")
-                                                                    | Reset
-                                                        .row
-                                                            .col-sm-12
-                                                                table#stops-table.table.table-sm
-                                                .row
-                                                    .col-sm-12
-                                                        button.btn.btn-dark.btn-block(type="submit") Submit
-                                                //.row
-                                                //    .col-sm-12
-                                                //        .form-group
-                                                //            .input-group.date
-                                                //                input.form-control.date-time-picker(type='text' name='transfer-datetime' placeholder='Enter pick up time' required)
-                                                //                .input-group-addon.input-group-append
-                                                //                    .input-group-text
-                                                //                        i.glyphicon.glyphicon-calendar.fa.fa-calendar
-
-
+                                | {% if transfers %}
+                                .row
+                                    .col-sm-12
+                                        div(style="width: 100%; margin: 10px 10px;")
+                                            h5 My transfers
+                                            table.table.table-sm.table-bordered
+                                                thead
+                                                    tr
+                                                        th Start time
+                                                        th Route
+                                                tbody
+                                                    | {% for transfer in transfers %}
+                                                    tr
+                                                        td {{ transfer.start_time }}
+                                                        td
+                                                            a.transfer-details(href='#' data-transfer-id='{{ transfer.id }}') {{ transfer.stopovers_text }}
+                                                    | {% endfor %}
+                                | {% endif %}
+                                | {% if organization_transfers %}
                                 hr
-                                div(style="width: 100%; margin: 10px 0 10px 0;")
-                                    h5 My transfers
-                                    #loading.text-center
-                                        img(src="{% static 'images/icons/Ripple-1s-200px.svg' %}")
-                                    table#transfers-table.table.table-sm.table-bordered
-                                        thead
-                                            tr
-                                                th Start time
-                                                th Seats
-                                                th Route
-                                                th Vehicle
-                                                th Vehicle Reg. Nr.
-                                                th Status
-                                                th Delete
-                                        tbody#transfers-tbody
-
-                    //.card
-                    //    #serviceTwo.card-header
-                    //        h5.mb-0
-                    //            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')
-                    //                | Hosting
-                    //    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')
-                    //        .card-body
-                    //            | To be implemented
-
-
+                                .row
+                                    .col-sm-12
+                                        div(style="width: 100%; margin: 10px 10px;")
+                                            h5 Organization transfers
+                                            table.table.table-sm.table-bordered
+                                                thead
+                                                    tr
+                                                        th Start time
+                                                        th Route
+                                                        th Delete
+                                                tbody
+                                                    | {% for transfer in organization_transfers %}
+                                                    tr
+                                                        td {{ transfer.start_time }}
+                                                        td
+                                                            a.organization-transfer-details(href='#' data-transfer-id='{{ transfer.id }}') {{ transfer.stopovers_text }}
+                                                        td
+                                                            a.delete-confirmation(href="{% url 'organization:delete_transfer' transfer_id=transfer.id %}" data-confirm='Are you sure you want to delete?')
+                                                                .fa.fa-times-circle
+                                                    | {% endfor %}
+                                | {% endif %}
 block extra_js
     script(src="{% static 'js/src/organization_services.js' %}")
 
@@ -111,17 +88,26 @@ block modal
         .modal-dialog.modal-lg
             .modal-content
                 .modal-header
-                    h5.modal-title Transfer details
+                    h3.modal-title Transfer
                     button.close(type='button' data-dismiss='modal' aria-label='Close')
                         span(aria-hidden='true') &times;
                 .modal-body
-                    table.table
+                    h5 Route
+                    table.table.table-bordered.table-sm
                         thead
                             tr
                                 th #
                                 th Time
                                 th City
                                 th Address
+                        tbody#transfer-route-details-tbody
+                    hr
+                    h5 Details
+                    table.table.table-bordered.table-sm
+                        thead
+                            tr
+                                th Property
+                                th Value
                         tbody#transfer-details-tbody
                 .modal-footer
                     button.btn.btn-secondary(type='button' data-dismiss='modal') Close

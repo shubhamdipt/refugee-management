@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from locations.models import City, Route
 from refugee_management.models import CreateUpdateModel
+
+TIMEZONE = settings.TIME_ZONE
 
 
 class Organization(models.Model):
@@ -44,7 +47,22 @@ class Helper(models.Model):
         verbose_name_plural = _("Helpers")
 
     def __str__(self):
-        return self.account_user.email
+        first_name = self.account_user.first_name
+        last_name = self.account_user.last_name
+        email = self.account_user.email
+        return f"{first_name if first_name else ''} {last_name if last_name else ''} - {email}"
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "organization": self.organization.name,
+            "first_name": self.account_user.first_name,
+            "last_name": self.account_user.last_name,
+            "email": self.account_user.email,
+            "phone": self.account_user.phone,
+            "account_type": self.get_account_type_display(),
+            "verified": self.verified,
+        }
 
 
 class OrganizationPickUpPoint(models.Model):
@@ -151,11 +169,7 @@ class Transfer(CreateUpdateModel):
 
     @property
     def stopovers(self):
-        return (
-            TransferRouteDetails.objects.filter(transfer=self)
-            .select_related("pick_up_point")
-            .order_by("departure_time")
-        )
+        return TransferRouteDetails.objects.filter(transfer=self).select_related("city").order_by("departure_time")
 
     @property
     def stopovers_text(self):
@@ -169,16 +183,23 @@ class Transfer(CreateUpdateModel):
     def as_dict(self, show_details=False):
         dict_obj = {
             "id": self.pk,
-            "start_time": self.start_time.strftime("%d/%m/%Y %H:%M"),
-            "seats": self.refugee_seats,
+            "organization": self.organization_route.organization.name,
+            "helper": self.helper.account_user.email if self.helper else None,
+            "secondary_helper": self.secondary_helper.email if self.secondary_helper else None,
+            "start_time": timezone.localtime(self.start_time).strftime("%d/%m/%Y %H:%M") if self.start_time else None,
+            "refugee_seats": self.refugee_seats,
+            "food": self.food,
+            "drinks": self.drinks,
+            "healthcare": self.healthcare,
+            "description": self.description,
             "route": self.stopovers_text,
             "active": self.active,
-            "vehicle": self.get_vehicle_display(),
-            "vehicle_registration_number": self.vehicle_registration_number,
         }
-        if not show_details:
-            del dict_obj["vehicle"]
-            del dict_obj["vehicle_registration_number"]
+        if show_details:
+            dict_obj["helper_seats"] = self.helper_seats
+            dict_obj["driver_seats"] = self.driver_seats
+            dict_obj["vehicle"] = self.get_vehicle_display() if self.vehicle else None
+            dict_obj["vehicle_registration_number"] = self.vehicle_registration_number
         return dict_obj
 
 
@@ -206,4 +227,14 @@ class TransferRouteDetails(models.Model):
         verbose_name_plural = _("Transfer Route Details")
 
     def __str__(self):
-        return f"{self.organization_route}: {self.pick_up_point} at {self.departure_time}"
+        return f"{self.transfer}: {self.city} at {self.departure_time}"
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "city": self.city.name,
+            "address": self.address,
+            "departure_time": timezone.localtime(self.departure_time).strftime("%d/%m/%Y %H:%M")
+            if self.departure_time
+            else None,
+        }

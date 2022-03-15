@@ -3,9 +3,9 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from organization.models import Transfer
+from organization.seats_management import SeatsManagement
 from refugee.models import TransferReservation
-from volunteer.models import Transfer
-from volunteer.seats_management import SeatsManagement
 
 
 class TransferReservationForm(forms.Form):
@@ -52,7 +52,10 @@ class TransferReservationForm(forms.Form):
             raise ValidationError(f"Only {seats_available} left for this trip.")
 
         if (
-            TransferReservation.objects.filter(refugee=self.refugee, transfer__start_time__gt=timezone.now()).count()
-            > 0
+                TransferReservation.objects.filter(
+                    refugee=self.refugee,
+                    transfer__start_time__gt=timezone.now()
+                ).count()
+                > 0
         ):
             raise ValidationError("Multiple active reservations are not allowed.")

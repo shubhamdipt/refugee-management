@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError, models
 from django.utils.translation import gettext_lazy as _
@@ -28,7 +30,8 @@ class City(models.Model):
 
 
 class RouteManager(models.Manager):
-    def get_or_create_with_cities_ids(self, cities_ids: list):
+    def get_or_create_with_cities_ids(self, cities_ids: list[Union[str, int]]):
+        cities_ids = [str(i) for i in cities_ids]
         if len(set(cities_ids)) != len(cities_ids):
             raise IntegrityError
         cities_combination = "-".join(cities_ids)

@@ -5,9 +5,9 @@ from django.http import JsonResponse
 from django.utils import timezone
 
 from locations.models import RouteCities
+from organization.models import Transfer
+from organization.seats_management import SeatsManagement
 from refugee_management.custom_sql import get_custom_sql_results
-from volunteer.models import Transfer
-from volunteer.seats_management import SeatsManagement
 
 
 def get_transfers(request):
@@ -33,7 +33,7 @@ def get_transfers(request):
         else:
             valid_routes_query = RouteCities.objects.filter(city_id=int(start_city or end_city))
             route_ids = [i.route.id for i in valid_routes_query.distinct("route__id")]
-        queryset = queryset.filter(volunteer_route__route__id__in=route_ids)
+        queryset = queryset.filter(organization_route__route__id__in=route_ids)
 
     if seats and start_city and end_city:
         seats = int(seats)

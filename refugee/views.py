@@ -3,11 +3,11 @@ import itertools
 from django.shortcuts import redirect, render, reverse
 from django.urls import reverse_lazy
 
+from organization.models import Transfer, TransferRouteDetails
+from organization.seats_management import SeatsManagement
 from refugee.forms import TransferReservationForm
 from refugee.models import TransferReservation
 from refugee_management.custom_access import refugee_access
-from volunteer.models import Transfer, TransferRouteDetails
-from volunteer.seats_management import SeatsManagement
 
 
 @refugee_access()

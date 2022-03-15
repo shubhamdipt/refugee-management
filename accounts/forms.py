@@ -6,7 +6,6 @@ from accounts.emails import send_activation_email
 from accounts.models import AccountUser
 from organization.models import Helper, Organization
 from refugee.models import Refugee
-from volunteer.models import Volunteer
 
 
 class AccountUserCreationForm(UserCreationForm):
@@ -33,15 +32,6 @@ class RefugeeCreationForm(AccountUserCreationForm):
 
     def _create_user_by_account_type(self, user: AccountUser):
         Refugee.objects.get_or_create(account_user=user)
-
-
-class VolunteerCreationForm(AccountUserCreationForm):
-    class Meta:
-        model = AccountUser
-        fields = ("first_name", "last_name", "email", "phone", "password1", "password2")
-
-    def _create_user_by_account_type(self, user: AccountUser):
-        Volunteer.objects.get_or_create(account_user=user)
 
 
 class OrganizationHelperCreationForm(AccountUserCreationForm):

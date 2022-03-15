@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/jquery.datetimepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
@@ -59,14 +59,25 @@
     <div id="content">
       <div class="container">
         <div class="row">
-          <div class="col-sm-8">
-            <h1>Welcome &nbsp;<span style="font-weight: normal; font-size: 20px; font-style: italic;">{{ request.user.email }} &nbsp;</span><span style="font-weight: bold; font-size: 15px; color:darkgreen;">(HELPER)</span></h1>
-            <p>Please select the appropriate service below.</p>
-          </div>{% if admin %}
-          <div class="col-sm-4">
+          <div class="col-sm-6 offset-sm-6">
+            <div class="organization-box">{{ helper.organization }}</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-5">
+            <h2>Welcome!</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-5"><span style="font-weight: normal; font-size: 20px; font-style: italic;">{{ request.user.email }} &nbsp;</span><span style="font-weight: bold; font-size: 15px; color:darkgreen;">(HELPER)</span></div>{% if admin %}
+          <div class="col-sm-7">
             <div class="text-right">
-              <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_pick_up_points' %}">Manage Pick up points</a></button>
-              <button class="btn btn-default"><a class="button-link" href="#">Manage Helpers</a></button>
+              <button class="btn btn-default"><a class="button-link" href="{% url 'organization:add_transfer' %}">Add transfer &nbsp;
+                  <div class="fa fa-plus"></div></a></button>
+              <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_pick_up_points' %}">Pick up points &nbsp;
+                  <div class="fa fa-gear"></div></a></button>
+              <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_helpers' %}">Helpers &nbsp;
+                  <div class="fa fa-gear"></div></a></button>
             </div>
           </div>{% endif %}
         </div>
@@ -81,105 +92,57 @@
                   </h5>
                 </div>
                 <div class="collapse show" id="collapseOne" aria-labelledby="serviceOne" data-parent="#accordion">
-                  <div class="card-body">
-                    <div style="width: 100%;">
-                      <h5>Add transfer details</h5>
-                      <form id="transferForm" method="POST" action="{% url 'organization:add_transfer_service' %}">
-                        <div class="row">
-                          <div class="col-sm-12">{% csrf_token %}
-                            <div class="row">
-                              <div class="col-sm-4">
-                                <div class="row">
-                                  <div class="col-sm-12">
-                                    <div class="form-group">
-                                      <select class="select-autocomplete" name="vehicle_type" title="Vehicle type" required>{% for val, name in vehicle_types %}
-                                        <option value="{{ val }}">{{ name }}</option>{% endfor %}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-sm-12">
-                                    <div class="form-group">
-                                      <input class="form-control" name="vehicle_registration_number" value="" type="text" placeholder="Vehicle registration number" autocomplete="off">
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-sm-12">
-                                    <div class="form-group">
-                                      <input class="form-control" name="transfer-refugees" value="" type="number" placeholder="Number of passengers" autocomplete="off" required>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-sm-12">
-                                <div class="row">
-                                  <div class="col-sm-6">
-                                    <button class="btn btn-sm btn-outline-default" id="add-stop">Add stop &nbsp;
-                                      <div class="fa fa-plus"></div>
-                                    </button>
-                                  </div>
-                                  <div class="col-sm-6">
-                                    <button class="btn btn-sm btn-outline-default" id="reset" style="float: right;">Reset</button>
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-sm-12">
-                                    <table class="table table-sm" id="stops-table"></table>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col-sm-12">
-                                <button class="btn btn-dark btn-block" type="submit">Submit</button>
-                              </div>
-                            </div>
-                            <!--.row-->
-                            <!--    .col-sm-12-->
-                            <!--        .form-group-->
-                            <!--            .input-group.date-->
-                            <!--                input.form-control.date-time-picker(type='text' name='transfer-datetime' placeholder='Enter pick up time' required)-->
-                            <!--                .input-group-addon.input-group-append-->
-                            <!--                    .input-group-text-->
-                            <!--                        i.glyphicon.glyphicon-calendar.fa.fa-calendar-->
-                          </div>
+                  <div class="card-body">{% if transfers %}
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div style="width: 100%; margin: 10px 10px;">
+                          <h5>My transfers</h5>
+                          <table class="table table-sm table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Start time</th>
+                                <th>Route</th>
+                              </tr>
+                            </thead>
+                            <tbody>{% for transfer in transfers %}
+                              <tr>
+                                <td>{{ transfer.start_time }}</td>
+                                <td><a class="transfer-details" href="#" data-transfer-id="{{ transfer.id }}">{{ transfer.stopovers_text }}</a></td>
+                              </tr>{% endfor %}
+                            </tbody>
+                          </table>
                         </div>
-                      </form>
-                    </div>
+                      </div>
+                    </div>{% endif %}
+                    {% if organization_transfers %}
                     <hr>
-                    <div style="width: 100%; margin: 10px 0 10px 0;">
-                      <h5>My transfers</h5>
-                      <div class="text-center" id="loading"><img src="{% static 'images/icons/Ripple-1s-200px.svg' %}"></div>
-                      <table class="table table-sm table-bordered" id="transfers-table">
-                        <thead>
-                          <tr>
-                            <th>Start time</th>
-                            <th>Seats</th>
-                            <th>Route</th>
-                            <th>Vehicle</th>
-                            <th>Vehicle Reg. Nr.</th>
-                            <th>Status</th>
-                            <th>Delete</th>
-                          </tr>
-                        </thead>
-                        <tbody id="transfers-tbody"></tbody>
-                      </table>
-                    </div>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div style="width: 100%; margin: 10px 10px;">
+                          <h5>Organization transfers</h5>
+                          <table class="table table-sm table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Start time</th>
+                                <th>Route</th>
+                                <th>Delete</th>
+                              </tr>
+                            </thead>
+                            <tbody>{% for transfer in organization_transfers %}
+                              <tr>
+                                <td>{{ transfer.start_time }}</td>
+                                <td><a class="organization-transfer-details" href="#" data-transfer-id="{{ transfer.id }}">{{ transfer.stopovers_text }}</a></td>
+                                <td><a class="delete-confirmation" href="{% url 'organization:delete_transfer' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">
+                                    <div class="fa fa-times-circle"></div></a></td>
+                              </tr>{% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>{% endif %}
                   </div>
                 </div>
               </div>
-              <!--.card-->
-              <!--    #serviceTwo.card-header-->
-              <!--        h5.mb-0-->
-              <!--            button.btn.btn-outline-primary.collapsed(data-toggle='collapse' data-target='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo')-->
-              <!--                | Hosting-->
-              <!--    #collapseTwo.collapse(aria-labelledby='serviceTwo' data-parent='#accordion')-->
-              <!--        .card-body-->
-              <!--            | To be implemented-->
             </div>
           </div>
         </div>
@@ -221,7 +184,7 @@
   <script src="{% static 'js/vendor/popper.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-  <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/jquery.datetimepicker.full.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
@@ -230,17 +193,29 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Transfer details</h5>
+          <h3 class="modal-title">Transfer</h3>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="modal-body">
-          <table class="table">
+          <h5>Route</h5>
+          <table class="table table-bordered table-sm">
             <thead>
               <tr>
                 <th>#</th>
                 <th>Time</th>
                 <th>City</th>
                 <th>Address</th>
+              </tr>
+            </thead>
+            <tbody id="transfer-route-details-tbody"></tbody>
+          </table>
+          <hr>
+          <h5>Details</h5>
+          <table class="table table-bordered table-sm">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Value</th>
               </tr>
             </thead>
             <tbody id="transfer-details-tbody"></tbody>

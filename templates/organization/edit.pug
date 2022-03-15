@@ -1,0 +1,16 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-6
+                h3 Edit {{ object_type }}
+            .col-sm-6
+                .organization-box {{ helper.organization }}
+        .row
+
+        .row
+            .col-sm-6
+                form#data-form(method="POST")
+                    | {% csrf_token %}
+                    | {{ form|crispy }}
+                    button.btn.btn-dark.btn-block(type="submit") Submit

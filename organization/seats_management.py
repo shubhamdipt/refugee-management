@@ -1,7 +1,7 @@
 import itertools
 
+from organization.models import Transfer
 from refugee.models import TransferReservation
-from volunteer.models import Transfer
 
 
 class SeatsManagement:

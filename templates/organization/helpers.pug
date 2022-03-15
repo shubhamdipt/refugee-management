@@ -1,0 +1,66 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-6
+                h2 Helpers
+            .col-sm-6
+                .organization-box {{ helper.organization }}
+        hr
+        .row
+            .col-sm-12
+                #loading.text-center
+                    img(src="{% static 'images/icons/Ripple-1s-200px.svg' %}")
+                table#data-table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th Organization
+                            th Account type
+                            th Verified
+                            th First Name
+                            th Last Name
+                            th Email
+                            th Phone
+                            th
+                    tbody#data-tbody
+
+block extra_js
+    script.
+        var loading = $("#loading");
+        var data_form = $("#data-form");
+        var data_table = $("#data-table");
+        var data_tbody = $("#data-tbody");
+        function clearForm() {
+            data_form.find('input, textarea').val('');
+        }
+        function get_objects() {
+            var html = '';
+            data_tbody.html(html);
+            loading.show();
+            data_table.hide();
+            $.get("/organization/api/get-helpers").done(function (data) {
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += (
+                        "<tr>" +
+                        "<td>" + data.results[i].organization + "</td>" +
+                        "<td>" + data.results[i].account_type + "</td>" +
+                        "<td>" + (data.results[i].verified ? "<i class='fa fa-check-circle'>" : "<i class='fa fa-times-circle'>") + "</td>" +
+                        "<td>" + data.results[i].first_name + "</td>" +
+                        "<td>" + data.results[i].last_name + "</td>" +
+                        "<td>" + data.results[i].email + "</td>" +
+                        "<td>" + data.results[i].phone + "</td>" +
+                        "<td><a target='_blank' href='/organization/edit-helper/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
+                        "</tr>"
+                    );
+                }
+                if (html === '') {
+                    html = "<tr><td colspan=4>No results found</td></tr>";
+                }
+                data_tbody.append(html);
+                data_table.show();
+                loading.hide();
+            })
+        };
+        $(function () {
+            get_objects();
+        })

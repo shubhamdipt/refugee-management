@@ -1,0 +1,38 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-6
+                h2 Add transfer
+            .col-sm-6
+                .organization-box {{ helper.organization }}
+        form#transferForm(method="POST", action="{% url 'organization:create_new_transfer' %}")
+            .row
+                .col-sm-10
+                    | {% csrf_token %}
+                    .row
+                        .col-sm-12
+                            div(style="margin: 10px;border-radius: 20px;border: 2px solid whitesmoke;padding: 20px;min-height: 200px;")
+                                h5 Route
+                                .row
+                                    .col-sm-6
+                                        button#add-stop.btn.btn-sm.btn-outline-default
+                                            | Add stop &nbsp;
+                                            .fa.fa-plus
+                                    .col-sm-6
+                                        button#reset.btn.btn-sm.btn-outline-default(style="float: right;")
+                                            | Reset
+                                .row
+                                    .col-sm-12
+                                        table#stops-table.table.table-sm
+                    hr
+                    .row
+                        .col-sm-12
+                            div(style="margin: 10px;border-radius: 20px;border: 2px solid whitesmoke;padding: 20px;")
+                                h5 Details
+                                | {% crispy form %}
+                    .row
+                        .col-sm-12
+                            button.btn.btn-dark.btn-block(type="submit", style="margin-bottom: 50px;") Add transfer
+block extra_js
+    script(src="{% static 'js/src/organization_transfer.js' %}")

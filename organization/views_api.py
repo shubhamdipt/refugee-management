@@ -1,14 +1,16 @@
 from datetime import datetime
 
-from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.timezone import make_aware
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
 from locations.models import Route
-from organization.forms import PickUpPointForm
+from organization.forms import PickUpPointForm, TransferForm
 from organization.models import (
+    Helper,
     OrganizationPickUpPoint,
     OrganizationRoute,
     Transfer,
@@ -32,6 +34,13 @@ def get_pick_up_points(request, helper):
 
 
 @organization_helper_admin_access()
+def get_helpers(request, helper):
+    queryset = Helper.objects.filter(organization=helper.organization).order_by("account_user__email")
+    results = [i.as_dict() for i in queryset]
+    return JsonResponse({"results": results})
+
+
+@organization_helper_admin_access()
 @require_POST
 def add_pick_up_point(request, helper):
     ctx = {}
@@ -46,91 +55,108 @@ def add_pick_up_point(request, helper):
 
 @organization_helper_access()
 def get_transfers(request, helper):
-    page = int(request.GET.get("page", 1))
     queryset = Transfer.objects.filter(helper=helper).order_by("-start_time")
-    paginator = Paginator(queryset, 25)
-    selected_results = paginator.get_page(page)
-    paginator_to_dict = [i.as_dict(show_details=True) for i in selected_results]
-    return JsonResponse({"results": paginator_to_dict})
+    results = [i.as_dict(show_details=True) for i in queryset]
+    return JsonResponse({"results": results})
 
 
 @organization_helper_access()
 def get_transfer_details(request, helper, transfer_id):
     transfer = Transfer.objects.get(id=transfer_id, helper=helper)
     ctx = {
-        "details": list(
-            TransferRouteDetails.objects.filter(transfer=transfer)
-            .extra(select={"departure_date_string": "to_char(departure_time, 'DD/MM/YYY HH24:MI:SS')"})
-            .values("id", "city__name", "address", "departure_date_string")
-            .order_by("departure_time")
-        ),
+        "object": transfer.as_dict(show_details=True),
+        "details": [
+            i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=transfer).order_by("departure_time")
+        ],
+    }
+    return JsonResponse(ctx)
+
+
+@organization_helper_admin_access()
+def get_organization_transfer_details(request, helper, transfer_id):
+    transfer = Transfer.objects.get(id=transfer_id, organization_route__organization=helper.organization)
+    ctx = {
+        "object": transfer.as_dict(show_details=True),
+        "details": [
+            i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=transfer).order_by("departure_time")
+        ],
     }
     return JsonResponse(ctx)
 
 
 @transaction.atomic
-@organization_helper_access()
+@organization_helper_admin_access()
 @require_POST
-def add_transfer_service(request, helper):
+def create_new_transfer(request, helper):
     current_tz = timezone.get_current_timezone()
     try:
-        transfer_refugees = request.POST.get("transfer-refugees")
-        vehicle_type = request.POST.get("vehicle_type")
-        vehicle_registration_number = request.POST.get("vehicle_registration_number")
-        stopovers = []
+        stopovers_details = []
         count = 1
         while True:
-            city_key = f"city-{count}"
-            datetime_key = f"datetime-{count}"
-            address_key = f"address-{count}"
-            city_id = request.POST.get(city_key)
-            datetime_string = request.POST.get(datetime_key)
-            address = request.POST.get(address_key)
-            if city_id and datetime_string and address:
-                stopovers.append(
+            stopover_key = f"stopover-{count}"
+            date_key = f"date-{count}"
+            time_key = f"time-{count}"
+            stopover_id = request.POST.get(stopover_key)
+            date_string = request.POST.get(date_key)
+            time_string = request.POST.get(time_key)
+            if stopover_id and date_string and time_string:
+                stopovers_details.append(
                     (
-                        city_id,
-                        datetime.strptime(datetime_string, "%d/%m/%Y %H:%M").replace(tzinfo=current_tz),
-                        address,
+                        OrganizationPickUpPoint.objects.get(id=stopover_id, organization=helper.organization),
+                        make_aware(datetime.strptime(f"{date_string} {time_string}", "%d/%m/%Y %H:%M")),
                     )
                 )
                 count += 1
-            elif all(v is None for v in [city_id, datetime_string, address]):
+            # Stop when all fields are found empty
+            elif all(v is None for v in [stopover_id, date_string, time_string]):
                 break
+            # Raise when any field is found empty
             else:
-                raise ValueError("Incomplete form filled. Please check the form again.")
+                raise ValueError(_("Incomplete form filled. Please check the form again."))
 
-        datetime_strings = [i[1] for i in stopovers]
-        if len(stopovers) < 2:
-            raise ValueError("Minimum two stopovers are required.")
+        datetime_strings = [i[1] for i in stopovers_details]
+        if len(stopovers_details) < 2:
+            raise ValueError(_("Minimum two stopovers are required."))
         if sorted(datetime_strings) != datetime_strings or len(datetime_strings) != len(set(datetime_strings)):
-            raise ValueError("Invalid time found. Please check the order of the time entered for each stopover.")
-        if not transfer_refugees:
-            raise ValueError("Missing number of passengers.")
-        if not vehicle_type:
-            raise ValueError("Missing vehicle type.")
-        route, _ = Route.objects.get_or_create_with_cities_ids(cities_ids=[i[0] for i in stopovers])
-        organization_route, _ = OrganizationRoute.objects.get_or_create(route=route, organization=helper.organization)
-        obj = Transfer.objects.create(
-            organization_route=organization_route,
-            helper=helper,
-            refugee_seats=int(transfer_refugees),
-            start_time=datetime_strings[0],
-            vehicle=int(vehicle_type) if vehicle_type else None,
-            vehicle_registration_number=vehicle_registration_number,
-        )
-        transfer_route_objects = []
-        for stopover in stopovers:
-            transfer_route_objects.append(
-                TransferRouteDetails(
-                    transfer=obj, city_id=stopover[0], departure_time=stopover[1], address=stopover[2]
-                )
+            raise ValueError(_("Invalid time found. Please check the order of the time entered for each stopover."))
+
+        # Create transfer
+        transfer_form = TransferForm(helper=helper, data=request.POST)
+        if transfer_form.is_valid():
+            # Create route
+            route, route_created = Route.objects.get_or_create_with_cities_ids(
+                cities_ids=[i[0].city.id for i in stopovers_details]
             )
-        TransferRouteDetails.objects.bulk_create(transfer_route_objects)
+            organization_route, org_route_created = OrganizationRoute.objects.get_or_create(
+                route=route, organization=helper.organization
+            )
+
+            obj = transfer_form.save(commit=False)
+            obj.organization_route = organization_route
+            obj.start_time = datetime_strings[0]
+            obj.save()
+            transfer_route_objects = []
+            for stopover in stopovers_details:
+                transfer_route_objects.append(
+                    TransferRouteDetails(
+                        transfer=obj, city=stopover[0].city, departure_time=stopover[1], address=stopover[0].address
+                    )
+                )
+            TransferRouteDetails.objects.bulk_create(transfer_route_objects)
+        else:
+            return JsonResponse(
+                {
+                    "error": transfer_form.errors.get("__all__")[0]
+                    if transfer_form.errors.get("__all__")
+                    else _("Invalid form submitted.")
+                }
+            )
     except IntegrityError:
-        error = "Invalid form submitted. Same cities have been entered more than once as stopovers."
+        error = _("Invalid form submitted. Same cities have been entered more than once as stopovers.")
         return JsonResponse({"error": error})
     except ValueError as e:
         error = str(e)
         return JsonResponse({"error": error})
-    return JsonResponse({"success": "Form has been successfully submitted.", "instance": obj.as_dict()})
+    except OrganizationPickUpPoint.DoesNotExist:
+        return JsonResponse({"error": _("Pick up point does not exist for this organization.")})
+    return JsonResponse({"success": _("Transfer has been successfully submitted.")})

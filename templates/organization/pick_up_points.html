@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{% static 'css/styles.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor/jquery.datetimepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-datepicker.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendor/bootstrap-select.min.css' %}">
   </head>
@@ -59,13 +59,11 @@
     <div id="content">
       <div class="container">
         <div class="row">
-          <div class="col-sm-12">
-            <h1>{{ helper.organization }}</h1>
+          <div class="col-sm-6">
+            <h2>Pick up points</h2>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <h3>Pick up points</h3>
+          <div class="col-sm-6">
+            <div class="organization-box">{{ helper.organization }}</div>
           </div>
         </div>
         <div class="row">
@@ -88,16 +86,10 @@
                   <th>City</th>
                   <th>Address</th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
-              <tbody id="data-tbody">{% for obj in queryset %}
-                <tr>
-                  <td>{{ obj.city.country.name }}</td>
-                  <td>{{ obj.city.name }}</td>
-                  <td>{{ obj.address }}</td>
-                  <td></td>
-                </tr>{% endfor %}
-              </tbody>
+              <tbody id="data-tbody"></tbody>
             </table>
           </div>
         </div>
@@ -139,7 +131,7 @@
   <script src="{% static 'js/vendor/popper.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/vendor/moment-with-locales.min.js' %}"></script>
-  <script src="{% static 'js/vendor/bootstrap-datetimepicker.min.js' %}"></script>
+  <script src="{% static 'js/vendor/jquery.datetimepicker.full.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
@@ -164,6 +156,7 @@
                     "<td>" + data.results[i].country + "</td>" +
                     "<td>" + data.results[i].city + "</td>" +
                     "<td>" + data.results[i].address + "</td>" +
+                    "<td><a target='_blank' href='/organization/edit-pick-up-point/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
                     "<td><a class='delete-confirmation' href='/organization/delete-pick-up-point/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
                     "<i class='fa fa-times-circle grey'></i></a></td></tr>"
                 );

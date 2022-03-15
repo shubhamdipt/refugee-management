@@ -2,11 +2,10 @@ extends ./../layout.pug
 block content
     .container
         .row
-            .col-sm-12
-                h1 {{ helper.organization }}
-        .row
-            .col-sm-12
-                h3 Pick up points
+            .col-sm-6
+                h2 Pick up points
+            .col-sm-6
+                .organization-box {{ helper.organization }}
         .row
             .col-sm-6
                 form#data-form(method="POST", action="{% url 'organization:add_pick_up_point' %}")
@@ -25,14 +24,8 @@ block content
                             th City
                             th Address
                             th
+                            th
                     tbody#data-tbody
-                        | {% for obj in queryset %}
-                        tr
-                            td {{ obj.city.country.name }}
-                            td {{ obj.city.name }}
-                            td {{ obj.address }}
-                            td
-                        | {% endfor %}
 
 block extra_js
     script.
@@ -55,6 +48,7 @@ block extra_js
                         "<td>" + data.results[i].country + "</td>" +
                         "<td>" + data.results[i].city + "</td>" +
                         "<td>" + data.results[i].address + "</td>" +
+                        "<td><a target='_blank' href='/organization/edit-pick-up-point/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
                         "<td><a class='delete-confirmation' href='/organization/delete-pick-up-point/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
                         "<i class='fa fa-times-circle grey'></i></a></td></tr>"
                     );
