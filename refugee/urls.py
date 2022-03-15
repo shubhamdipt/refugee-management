@@ -1,6 +1,11 @@
 from django.urls import path
 
-from refugee.views import delete_transfer_reservation, reserve_transfer, services
+from refugee.views import (
+    delete_transfer_reservation,
+    reserve_transfer,
+    services,
+    transfer_reservation_details,
+)
 from refugee.views_api import get_transfer_reservation_details, get_transfers
 
 app_name = "refugee"
@@ -11,6 +16,11 @@ urlpatterns = [
         "delete-transfer-reservation/<int:reservation_id>",
         delete_transfer_reservation,
         name="delete_transfer_reservation",
+    ),
+    path(
+        "transfer-reservation-details/<int:reservation_id>",
+        transfer_reservation_details,
+        name="transfer_reservation_details",
     ),
     # APIs
     path("api/get-transfers", get_transfers, name="get_transfers"),

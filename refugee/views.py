@@ -60,3 +60,8 @@ def reserve_transfer(request, refugee, transfer_id):
 def delete_transfer_reservation(request, refugee, reservation_id):
     TransferReservation.objects.filter(id=reservation_id, refugee=refugee).delete()
     return redirect(reverse("refugee:services"))
+
+
+@refugee_access()
+def transfer_reservation_details(request, refugee, reservation_id):
+    return render(request, "refugee/transfer_reservation_details.html", {"reservation_id": reservation_id})

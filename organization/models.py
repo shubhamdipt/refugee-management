@@ -65,7 +65,7 @@ class Helper(models.Model):
         }
 
 
-class OrganizationRules(models.Model):
+class OrganizationTransferRules(CreateUpdateModel):
     headline = models.CharField(_("Headline"), unique=True, max_length=63)
     rules = models.TextField(_("Rules"))
     organization = models.ForeignKey(
@@ -77,8 +77,8 @@ class OrganizationRules(models.Model):
     )
 
     class Meta:
-        verbose_name = _("Organization Rules")
-        verbose_name_plural = _("Organizations Rules")
+        verbose_name = _("Organization Transfer Rules")
+        verbose_name_plural = _("Organizations Transfer Rules")
 
     def __str__(self):
         return f"{self.headline}: {self.organization.name}"
@@ -179,7 +179,7 @@ class Transfer(CreateUpdateModel):
     translators = models.CharField(_("Translators"), max_length=255, null=True, blank=True)
     description = models.TextField(_("Additional remarks"), null=True, blank=True)
     rules = models.ForeignKey(
-        OrganizationRules,
+        OrganizationTransferRules,
         verbose_name=_("Rules"),
         on_delete=models.SET_NULL,
         null=True,
@@ -218,6 +218,7 @@ class Transfer(CreateUpdateModel):
             "translators": self.translators,
             "route": self.stopovers_text,
             "start_time": timezone.localtime(self.start_time).strftime("%d/%m/%Y %H:%M") if self.start_time else None,
+            "rules": self.rules.rules if self.rules else None,
         }
         hidden_dict = {}
         if helper_view:

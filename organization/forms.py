@@ -3,7 +3,12 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from organization.models import Helper, OrganizationPickUpPoint, Transfer
+from organization.models import (
+    Helper,
+    OrganizationPickUpPoint,
+    OrganizationTransferRules,
+    Transfer,
+)
 
 
 class PickUpPointForm(forms.ModelForm):
@@ -50,6 +55,7 @@ class TransferForm(forms.ModelForm):
             "blanket",
             "healthcare",
             "translators",
+            "rules",
             "description",
         )
 
@@ -68,3 +74,9 @@ class TransferForm(forms.ModelForm):
         cleaned_data = super().clean()
         if cleaned_data.get("helper") == cleaned_data.get("secondary_helper"):
             raise ValidationError(_("Secondary and primary helper cannot be the same."))
+
+
+class OrganizationTransferRulesForm(forms.ModelForm):
+    class Meta:
+        model = OrganizationTransferRules
+        fields = ("headline", "rules")

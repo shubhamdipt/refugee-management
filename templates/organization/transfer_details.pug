@@ -1,0 +1,131 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-12
+                h1 Transfer
+        .row
+            .col-sm-6
+                h5 Route
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th #
+                            th Time
+                            th City
+                            th Address
+                    tbody#transfer-route-details-tbody
+        hr
+        .row
+            .col-sm-6
+                h5 Details
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th Property
+                            th Value
+                    tbody
+                        tr
+                            td id
+                            td#id
+                        tr
+                            td Route
+                            td#route
+                        tr
+                            td Start time
+                            td#start_time
+                        tr
+                            td Vehicle
+                            td#vehicle
+                        tr
+                            td Vehicle registration number
+                            td#vehicle_registration_number
+                        tr
+                            td Organization
+                            td#organization
+                        tr
+                            td Helper
+                            td#helper
+                        tr
+                            td Secondary helper
+                            td#secondary_helper
+                        tr
+                            td Refugee seats
+                            td#refugee_seats
+                        tr
+                            td Helper seats
+                            td#helper_seats
+                        tr
+                            td Driver seats
+                            td#driver_seats
+                        tr
+                            td Food
+                            td#food
+                        tr
+                            td Drinks
+                            td#drinks
+                        tr
+                            td Blanket
+                            td#blanket
+                        tr
+                            td Healthcare
+                            td#heathcare
+                        tr
+                            td Translators
+                            td#translators
+                        tr
+                            td Description
+                            td#description
+            .col-sm-6
+                h5 Seats availability
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th Trip
+                            th Seats
+                    tbody#seat-availability-tbody
+        hr
+        .row
+            .col-sm-12
+                h5 Rules
+                #rules
+block extra_js
+    script.
+        var transfer_id = '{{ transfer_id }}';
+        var loading = $("#loading");
+        var transfer_route_details_tbody = $("#transfer-route-details-tbody");
+        var seat_availability_tbody = $("#seat-availability-tbody");
+
+        function get_transfer_details(transfer_id) {
+            var url = '/organization/api/get-transfer-details/';
+            var html = '';
+            var seat_html = "";
+            transfer_route_details_tbody.html(html);
+            seat_availability_tbody.html(seat_html);
+            $.get(url + transfer_id).done(function(data){
+                $("#rules").html(data.object.rules);
+                for([key, val] of Object.entries(data.object)) {
+                    $("#" + key).html(clean_value(val));
+                }
+                for (var i = 0; i < data.details.length ; i++) {
+                    html += "<tr>" +
+                        "<td>" + (i+1) + "</td>" +
+                        "<td>" + data.details[i].departure_time + "</td>" +
+                        "<td>" + data.details[i].city + "</td>" +
+                        "<td>" + data.details[i].address + "</td>" +
+                        "</tr>";
+                }
+                for (var j = 0; j < data.seats_availability.length ; j++) {
+                    seat_html += "<tr>" +
+                        "<td>" + data.seats_availability[j][0] + " -> " + data.seats_availability[j][1] + "</td>" +
+                        "<td>" + data.seats_availability[j][2] + "</td>" +
+                        "</tr>";
+                }
+                transfer_route_details_tbody.append(html);
+                seat_availability_tbody.append(seat_html);
+                $('#transferDetailsModal').modal('show');
+            })
+        }
+        $(function (){
+            get_transfer_details(transfer_id);
+        })

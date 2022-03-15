@@ -24,6 +24,10 @@ block content
                             | Pick up points &nbsp;
                             .fa.fa-gear
                     button.btn.btn-default
+                        a.button-link(href="{% url 'organization:manage_transfer_rules' %}")
+                            | Transfer Rules &nbsp;
+                            .fa.fa-gear
+                    button.btn.btn-default
                         a.button-link(href="{% url 'organization:manage_helpers' %}")
                             | Helpers &nbsp;
                             .fa.fa-gear
@@ -54,7 +58,7 @@ block content
                                                     tr
                                                         td {{ transfer.start_time }}
                                                         td
-                                                            a.transfer-details(href='#' data-transfer-id='{{ transfer.id }}') {{ transfer.stopovers_text }}
+                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank") {{ transfer.stopovers_text }}
                                                     | {% endfor %}
                                 | {% endif %}
                                 | {% if organization_transfers %}
@@ -75,7 +79,7 @@ block content
                                                     tr
                                                         td {{ transfer.start_time }}
                                                         td
-                                                            a.organization-transfer-details(href='#' data-transfer-id='{{ transfer.id }}') {{ transfer.stopovers_text }}
+                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank") {{ transfer.stopovers_text }}
                                                         td
                                                             a.delete-confirmation(href="{% url 'organization:edit_transfer' object_id=transfer.id %}" data-confirm='Are you sure you want to edit?')
                                                                 .fa.fa-edit
@@ -84,89 +88,3 @@ block content
                                                                 .fa.fa-times-circle
                                                     | {% endfor %}
                                 | {% endif %}
-block extra_js
-    script(src="{% static 'js/src/organization_services.js' %}")
-
-block modal
-    #transferDetailsModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
-        .modal-dialog.modal-lg
-            .modal-content
-                .modal-header
-                    h3.modal-title Transfer
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
-                        span(aria-hidden='true') &times;
-                .modal-body
-                    h5 Route
-                    table.table.table-bordered.table-sm
-                        thead
-                            tr
-                                th #
-                                th Time
-                                th City
-                                th Address
-                        tbody#transfer-route-details-tbody
-                    hr
-                    h5 Details
-                    table.table.table-bordered.table-sm
-                        thead
-                            tr
-                                th Property
-                                th Value
-                        tbody
-                            tr
-                                td id
-                                td#id
-                            tr
-                                td Route
-                                td#route
-                            tr
-                                td Start time
-                                td#start_time
-                            tr
-                                td Vehicle
-                                td#vehicle
-                            tr
-                                td Vehicle registration number
-                                td#vehicle_registration_number
-                            tr
-                                td Organization
-                                td#organization
-                            tr
-                                td Helper
-                                td#helper
-                            tr
-                                td Secondary helper
-                                td#secondary_helper
-                            tr
-                                td Refugee seats
-                                td#refugee_seats
-                            tr
-                                td Helper seats
-                                td#helper_seats
-                            tr
-                                td Driver seats
-                                td#driver_seats
-                            tr
-                                td Food
-                                td#food
-                            tr
-                                td Drinks
-                                td#drinks
-                            tr
-                                td Blanket
-                                td#blanket
-                            tr
-                                td Healthcare
-                                td#heathcare
-                            tr
-                                td Translators
-                                td#translators
-                            tr
-                                td Description
-                                td#description
-                    hr
-                    h5 Seats availability
-                    table.table.table-bordered.table-sm
-                        tbody#seat-availability-tbody
-                .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close

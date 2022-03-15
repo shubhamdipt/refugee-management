@@ -59,4 +59,6 @@ class TransferReservation(CreateUpdateModel):
             "route": self.route_text,
             "seats": self.seats,
             "departure_time": self.from_city.departure_time.strftime("%d/%m/%Y %H:%M"),
+            "from_city": self.from_city.city.name,
+            "to_city": self.to_city.city.name,
         }

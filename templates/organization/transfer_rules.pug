@@ -1,0 +1,42 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-6
+                h2 Transfer rules
+            .col-sm-6
+                .organization-box {{ helper.organization }}
+        .row
+            .col-sm-12
+                form#data-form(method="POST")
+                    | {% csrf_token %}
+                    | {{ form|crispy }}
+                    button.btn.btn-dark.btn-block(type="submit") Add transfer rules
+        hr
+        | {% if transfer_rules %}
+        .row
+            .col-sm-12
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th(style="width: 220px;") Created
+                            th Headline
+                            th
+                            th
+                    tbody
+                        | {% for rules in transfer_rules %}
+                        tr
+                            td(style="width: 220px;") {{ rules.created }}
+                            td {{ rules.headline }}
+                            td
+                                a.delete-confirmation(href="{% url 'organization:edit_transfer_rules' rules_id=rules.id %}" data-confirm="Are you sure you want to edit?")
+                                    .fa.fa-edit
+                            td
+                                a.delete-confirmation(href="{% url 'organization:delete_transfer_rules' rules_id=rules.id %}" data-confirm="Are you sure you want to delete?")
+                                    .fa.fa-times-circle
+                        | {% endfor %}
+        | {% endif %}
+block extra_js
+    script(src="{% static 'js/vendor/ckeditor/ckeditor.js' %}")
+    script.
+        CKEDITOR.replace( 'rules' );

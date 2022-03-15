@@ -76,6 +76,8 @@
                   <div class="fa fa-plus"></div></a></button>
               <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_pick_up_points' %}">Pick up points &nbsp;
                   <div class="fa fa-gear"></div></a></button>
+              <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_transfer_rules' %}">Transfer Rules &nbsp;
+                  <div class="fa fa-gear"></div></a></button>
               <button class="btn btn-default"><a class="button-link" href="{% url 'organization:manage_helpers' %}">Helpers &nbsp;
                   <div class="fa fa-gear"></div></a></button>
             </div>
@@ -107,7 +109,7 @@
                             <tbody>{% for transfer in transfers %}
                               <tr>
                                 <td>{{ transfer.start_time }}</td>
-                                <td><a class="transfer-details" href="#" data-transfer-id="{{ transfer.id }}">{{ transfer.stopovers_text }}</a></td>
+                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank">{{ transfer.stopovers_text }}</a></td>
                               </tr>{% endfor %}
                             </tbody>
                           </table>
@@ -132,7 +134,7 @@
                             <tbody>{% for transfer in organization_transfers %}
                               <tr>
                                 <td>{{ transfer.start_time }}</td>
-                                <td><a class="organization-transfer-details" href="#" data-transfer-id="{{ transfer.id }}">{{ transfer.stopovers_text }}</a></td>
+                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank">{{ transfer.stopovers_text }}</a></td>
                                 <td><a class="delete-confirmation" href="{% url 'organization:edit_transfer' object_id=transfer.id %}" data-confirm="Are you sure you want to edit?">
                                     <div class="fa fa-edit"></div></a></td>
                                 <td><a class="delete-confirmation" href="{% url 'organization:delete_transfer' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">
@@ -192,120 +194,7 @@
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
-  <script src="{% static 'js/src/main.js' %}"></script>
-  <div class="modal fade" id="transferDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title">Transfer</h3>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body">
-          <h5>Route</h5>
-          <table class="table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Time</th>
-                <th>City</th>
-                <th>Address</th>
-              </tr>
-            </thead>
-            <tbody id="transfer-route-details-tbody"></tbody>
-          </table>
-          <hr>
-          <h5>Details</h5>
-          <table class="table table-bordered table-sm">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>id</td>
-                <td id="id"></td>
-              </tr>
-              <tr>
-                <td>Route</td>
-                <td id="route"></td>
-              </tr>
-              <tr>
-                <td>Start time</td>
-                <td id="start_time"></td>
-              </tr>
-              <tr>
-                <td>Vehicle</td>
-                <td id="vehicle"></td>
-              </tr>
-              <tr>
-                <td>Vehicle registration number</td>
-                <td id="vehicle_registration_number"></td>
-              </tr>
-              <tr>
-                <td>Organization</td>
-                <td id="organization"></td>
-              </tr>
-              <tr>
-                <td>Helper</td>
-                <td id="helper"></td>
-              </tr>
-              <tr>
-                <td>Secondary helper</td>
-                <td id="secondary_helper"></td>
-              </tr>
-              <tr>
-                <td>Refugee seats</td>
-                <td id="refugee_seats"></td>
-              </tr>
-              <tr>
-                <td>Helper seats</td>
-                <td id="helper_seats"></td>
-              </tr>
-              <tr>
-                <td>Driver seats</td>
-                <td id="driver_seats"></td>
-              </tr>
-              <tr>
-                <td>Food</td>
-                <td id="food"></td>
-              </tr>
-              <tr>
-                <td>Drinks</td>
-                <td id="drinks"></td>
-              </tr>
-              <tr>
-                <td>Blanket</td>
-                <td id="blanket"></td>
-              </tr>
-              <tr>
-                <td>Healthcare</td>
-                <td id="heathcare"></td>
-              </tr>
-              <tr>
-                <td>Translators</td>
-                <td id="translators"></td>
-              </tr>
-              <tr>
-                <td>Description</td>
-                <td id="description"></td>
-              </tr>
-            </tbody>
-          </table>
-          <hr>
-          <h5>Seats availability</h5>
-          <table class="table table-bordered table-sm">
-            <tbody id="seat-availability-tbody"></tbody>
-          </table>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="{% static 'js/src/organization_services.js' %}"></script>{% if not request.user.is_superuser %}
+  <script src="{% static 'js/src/main.js' %}"></script>{% if not request.user.is_superuser %}
           <!-- Global site tag (gtag.js) - Google Analytics-->
           <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
           <script>

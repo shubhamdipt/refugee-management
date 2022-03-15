@@ -83,18 +83,6 @@ def get_transfer_details(request, helper, transfer_id):
     return JsonResponse(ctx)
 
 
-@organization_helper_admin_access()
-def get_organization_transfer_details(request, helper, transfer_id):
-    transfer = Transfer.objects.get(id=transfer_id, organization_route__organization=helper.organization)
-    ctx = {
-        "object": transfer.as_dict(helper_view=True),
-        "details": [
-            i.as_dict() for i in TransferRouteDetails.objects.filter(transfer=transfer).order_by("departure_time")
-        ],
-    }
-    return JsonResponse(ctx)
-
-
 @transaction.atomic
 @organization_helper_admin_access()
 @require_POST

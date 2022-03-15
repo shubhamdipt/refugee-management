@@ -23,20 +23,19 @@ def get_transfer_reservation_details(request, refugee, reservation_id):
         .select_related("from_city__city", "to_city__city")
         .first()
     )
-    details = []
+    journey = []
     valid = False
     for location in TransferRouteDetails.objects.filter(transfer=reservation.transfer).order_by("departure_time"):
         if location.city.id == reservation.from_city.city.id:
             valid = True
         if valid:
-            details.append(location.as_dict())
+            journey.append(location.as_dict())
         if location.city.id == reservation.to_city.city.id:
             break
     return JsonResponse(
         {
-            "details": details,
+            "journey": journey,
             "transfer": reservation.transfer.as_dict(helper_view=True, refugee_view=True),
-            "reservation_id": reservation.id,
-            "seats": reservation.seats,
+            "reservation": reservation.as_dict(),
         }
     )

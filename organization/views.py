@@ -7,10 +7,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
-from organization.forms import PickUpPointForm, TransferForm
+from organization.forms import (
+    OrganizationTransferRulesForm,
+    PickUpPointForm,
+    TransferForm,
+)
 from organization.models import (
     Helper,
     OrganizationPickUpPoint,
+    OrganizationTransferRules,
     Transfer,
     TransferRouteDetails,
 )
@@ -114,3 +119,61 @@ def delete_transfer(request, helper, transfer_id):
     TransferRouteDetails.objects.filter(transfer_id=transfer_id).delete()
     Transfer.objects.filter(id=transfer_id, organization_route__organization=helper.organization).delete()
     return redirect(reverse("organization:services"))
+
+
+@organization_helper_access()
+def transfer_details(request, helper, transfer_id):
+    return render(request, "organization/transfer_details.html", {"transfer_id": transfer_id})
+
+
+@organization_helper_admin_access()
+def manage_transfer_rules(request, helper):
+    form = OrganizationTransferRulesForm()
+    ctx = {}
+    if request.method == "POST":
+        form = OrganizationTransferRulesForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.organization = helper.organization
+            obj.save()
+            form = OrganizationTransferRulesForm()
+            ctx = {"success": _("The transfer rule has been successfully created.")}
+    return render(
+        request,
+        "organization/transfer_rules.html",
+        {
+            "helper": helper,
+            "transfer_rules": OrganizationTransferRules.objects.filter(organization=helper.organization).order_by(
+                "-created"
+            ),
+            "form": form,
+            **ctx,
+        },
+    )
+
+
+@organization_helper_admin_access()
+def edit_transfer_rules(request, helper, rules_id):
+    rules = OrganizationTransferRules.objects.get(id=rules_id, organization=helper.organization)
+    form = OrganizationTransferRulesForm(instance=rules)
+    if request.method == "POST":
+        form = OrganizationTransferRulesForm(request.POST, instance=rules)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.organization = helper.organization
+            obj.save()
+            return redirect(reverse("organization:manage_transfer_rules"))
+    return render(
+        request,
+        "organization/transfer_rules_edit.html",
+        {
+            "helper": helper,
+            "form": form,
+        },
+    )
+
+
+@organization_helper_admin_access()
+def delete_transfer_rules(request, helper, rules_id):
+    OrganizationTransferRules.objects.filter(id=rules_id, organization=helper.organization).delete()
+    return redirect(reverse("organization:manage_transfer_rules"))

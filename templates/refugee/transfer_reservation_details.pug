@@ -1,0 +1,96 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            .col-sm-12
+                h1 Transfer Reservation
+        .row
+            .col-sm-6
+                h3 Your Route
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th #
+                            th Time
+                            th City
+                            th Address
+                    tbody#transfer-route-details-tbody
+        hr
+        .row
+            .col-sm-6
+                h5 Details
+                table.table.table-bordered.table-sm
+                    thead
+                        tr
+                            th Property
+                            th Value
+                    tbody
+                        tr
+                            td Full Route
+                            td#route
+                        tr
+                            td Vehicle
+                            td#vehicle
+                        tr
+                            td Vehicle registration number
+                            td#vehicle_registration_number
+                        tr
+                            td.strong Reserved seats
+                            td#seats.strong
+                        tr
+                            td Food
+                            td#food
+                        tr
+                            td Drinks
+                            td#drinks
+                        tr
+                            td Blanket
+                            td#blanket
+                        tr
+                            td Healthcare
+                            td#heathcare
+                        tr
+                            td Translators
+                            td#translators
+                        tr
+                            td Organization
+                            td#organization
+                        tr
+                            td Helper
+                            td#helper
+                        tr
+                            td Secondary helper
+                            td#secondary_helper
+        hr
+        .row
+            .col-sm-12
+                h5 Rules
+                #rules
+block extra_js
+    script.
+        var reservation_id = '{{ reservation_id }}';
+        var transfer_route_details_tbody = $("#transfer-route-details-tbody");
+        function get_transfer_reservation_details(reservation_id) {
+            transfer_route_details_tbody.html('');
+            var html = '';
+            $.get('/refugee/api/get-transfer-reservation-details/' + reservation_id).done(function(data){
+                $("#seats").html(clean_value(data.reservation.seats));
+                $("#rules").html(data.transfer.rules);
+                for([key, val] of Object.entries(data.transfer)) {
+                    $("#" + key).html(clean_value(val));
+                }
+                for (var i = 0; i < data.journey.length ; i++) {
+                    html += "<tr>" +
+                        "<td>" + (i+1) + "</td>" +
+                        "<td>" + data.journey[i].departure_time + "</td>" +
+                        "<td>" + data.journey[i].city + "</td>" +
+                        "<td>" + data.journey[i].address + "</td>" +
+                        "</tr>";
+                }
+                transfer_route_details_tbody.append(html);
+                $('#transferDetailsModal').modal('show');
+            })
+        }
+        $(function (){
+            get_transfer_reservation_details(reservation_id);
+        })

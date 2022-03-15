@@ -29,86 +29,36 @@ block content
                                                 th Route
                                                 th Delete
                                         tbody#transfers-tbody
-                                        | {% for reservation in transfer_reservations %}
-                                        tr
-                                            td {{ reservation.transfer.start_time|date:"d/m/Y H:i" }}
-                                            td {{ reservation.seats }}
-                                            td {{ reservation.route_text }}
-                                            td
-                                                | {% if reservation.transfer.active %}
-                                                .fa.fa-check-circle
-                                                | {% else %}
-                                                .fa.fa-times-circle
-                                                | {% endif %}
-                                            th
-                                                a.delete-confirmation(href="{% url 'refugee:delete_transfer_reservation' reservation_id=reservation.id %}", data-confirm="Are you sure you want to delete?")
-                                                    .fa.fa-times-circle.grey
-                                        | {% endfor %}
 
 block extra_js
-    script(src="{% static 'js/src/refugee_services.js' %}")
-
-block modal
-    #transferDetailsModal.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
-        .modal-dialog.modal-lg
-            .modal-content
-                .modal-header
-                    h5.modal-title Transfer
-                    button.close(type='button' data-dismiss='modal' aria-label='Close')
-                        span(aria-hidden='true') &times;
-                .modal-body
-                    h5 Route
-                    table.table.table-bordered.table-sm
-                        thead
-                            tr
-                                th #
-                                th Time
-                                th City
-                                th Address
-                        tbody#transfer-route-details-tbody
-                    hr
-                    h5 Details
-                    table.table.table-bordered.table-sm
-                        thead
-                            tr
-                                th Property
-                                th Value
-                        tbody
-                            tr
-                                td Route
-                                td#route
-                            tr
-                                td Vehicle
-                                td#vehicle
-                            tr
-                                td Vehicle registration number
-                                td#vehicle_registration_number
-                            tr
-                                td Reserved seats
-                                td#seats
-                            tr
-                                td Food
-                                td#food
-                            tr
-                                td Drinks
-                                td#drinks
-                            tr
-                                td Blanket
-                                td#blanket
-                            tr
-                                td Healthcare
-                                td#heathcare
-                            tr
-                                td Translators
-                                td#translators
-                            tr
-                                td Organization
-                                td#organization
-                            tr
-                                td Helper
-                                td#helper
-                            tr
-                                td Secondary helper
-                                td#secondary_helper
-                .modal-footer
-                    button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+    script.
+        var loading = $("#loading");
+        var transfers_table = $("#transfers-table");
+        var transfers_tbody = $("#transfers-tbody");
+        function get_transfers() {
+            var html = '';
+            transfers_tbody.html(html);
+            loading.show();
+            transfers_table.hide();
+            $.get("/refugee/api/get-transfers").done(function (data) {
+                for (var i = 0; i < data.results.length ; i++) {
+                    html += (
+                        "<tr>" +
+                        "<td>" + data.results[i].departure_time + "</td>" +
+                        "<td>" + data.results[i].seats + "</td>" +
+                        "<td><a href='/refugee/transfer-reservation-details/" + data.results[i].id + "' target='_blank'>" + data.results[i].route + "</a></td>" +
+                        "<td><a class='delete-confirmation' href='/refugee/delete-transfer-reservation/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
+                        "<i class='fa fa-times-circle grey'></i></a></td></tr>"
+                    );
+                }
+                if (html === '') {
+                    html = "<tr><td colspan=4>No results found</td></tr>";
+                }
+                transfers_tbody.append(html);
+                transfers_table.show();
+                loading.hide();
+            })
+        }
+        $(function () {
+            get_transfers();
+        })
