@@ -5,6 +5,7 @@ from organization.models import (
     Organization,
     OrganizationPickUpPoint,
     OrganizationRoute,
+    OrganizationRules,
     Transfer,
     TransferRouteDetails,
 )
@@ -20,6 +21,12 @@ class HelperAdmin(admin.ModelAdmin):
     list_display = ("id", "organization", "account_user", "account_type", "verified")
     list_filter = ("account_type", "verified")
     search_fields = ("account_user__email", "organization__name")
+
+
+@admin.register(OrganizationRules)
+class OrganizationRulesAdmin(admin.ModelAdmin):
+    list_display = ("id", "headline", "organization")
+    list_filter = ("organization",)
 
 
 @admin.register(OrganizationPickUpPoint)

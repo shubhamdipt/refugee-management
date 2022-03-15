@@ -65,6 +65,25 @@ class Helper(models.Model):
         }
 
 
+class OrganizationRules(models.Model):
+    headline = models.CharField(_("Headline"), unique=True, max_length=63)
+    rules = models.TextField(_("Rules"))
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name=_("Organization"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = _("Organization Rules")
+        verbose_name_plural = _("Organizations Rules")
+
+    def __str__(self):
+        return f"{self.headline}: {self.organization.name}"
+
+
 class OrganizationPickUpPoint(models.Model):
     organization = models.ForeignKey(
         Organization,
@@ -157,7 +176,15 @@ class Transfer(CreateUpdateModel):
     drinks = models.BooleanField(_("Drinks"), default=False)
     blanket = models.BooleanField(_("Blanket"), default=False)
     healthcare = models.BooleanField(_("Healthcare personnel"), default=False)
+    translators = models.CharField(_("Translators"), max_length=255, null=True, blank=True)
     description = models.TextField(_("Additional remarks"), null=True, blank=True)
+    rules = models.ForeignKey(
+        OrganizationRules,
+        verbose_name=_("Rules"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     active = models.BooleanField(_("Active"), default=True)
 
     class Meta:
