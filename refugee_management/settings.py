@@ -132,6 +132,46 @@ TEMPLATES = [
 ]
 
 """########################################################################
+#######             Logging configuration                             #####
+########################################################################"""
+# adapted from https://docs.djangoproject.com/en/3.2/topics/logging/#id9
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "console": {"level": ("INFO", "DEBUG")[DEBUG], "class": "logging.StreamHandler", "formatter": "verbose"},
+        "rotate.file.weekly": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": "server.log",
+            "level": ("CRITICAL", "DEBUG")[DEBUG],
+            "when": "W0",
+            "interval": 1,
+            "backupCount": 0,
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": [["rotate.file.weekly"], ["console"]][DEBUG],
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": [["rotate.file.weekly"], ["console"]][DEBUG],
+            "propagate": True,
+        },
+        "django.db.backends": {
+            "handlers": [["rotate.file.weekly"], ["console"]][DEBUG],
+            "propagate": True,
+        },
+    },
+}
+
+"""########################################################################
 #######                    MAIL settings                             #####
 ########################################################################"""
 
