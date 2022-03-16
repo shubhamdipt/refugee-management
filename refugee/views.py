@@ -27,7 +27,7 @@ def reserve_transfer(request, refugee, transfer_id):
     for from_city, to_city in city_combinations:
         availabilities.append((from_city, to_city, available_seats.get((from_city, to_city))))
     route_details = [(i["departure_time"], i["city"], i["address"]) for i in seats_management.route_details]
-    transfer_properties = transfer.as_dict().items()
+    transfer_properties = transfer.as_dict()
 
     form = TransferReservationForm(transfer=transfer, refugee=refugee)
     if request.method == "POST":

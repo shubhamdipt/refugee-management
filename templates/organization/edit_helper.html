@@ -59,19 +59,28 @@
     <div id="content">
       <div class="container">
         <div class="row">
+          <ul class="breadcrumbs">
+            <li class="first"><a href="{% url 'organization:services' %}">
+                <div class="fa fa-support"></div></a></li>
+            <li><a href="{% url 'organization:manage_helpers' %}">Manage helpers</a></li>
+            <li class="last active"><a href="#">Edit helper</a></li>
+          </ul>
+        </div>
+        <div class="row">
           <div class="col-sm-6">
-            <h2>Edit Transfer rules</h2>
+            <h3>Edit helper</h3>
           </div>
           <div class="col-sm-6">
             <div class="organization-box">{{ helper.organization }}</div>
           </div>
         </div>
+        <div class="row"></div>
         <div class="row">
-          <div class="col-sm-12">
+          <div class="col-sm-6">
             <form id="data-form" method="POST">
               {% csrf_token %}
               {{ form|crispy }}
-              <button class="btn btn-dark btn-block" type="submit">Edit transfer rules</button>
+              <button class="btn btn-dark btn-block" type="submit">Submit</button>
             </form>
           </div>
         </div>
@@ -118,9 +127,7 @@
   <script src="{% static 'js/vendor/bootstrap-datepicker.min.js' %}"></script>
   <script src="{% static 'js/vendor/bootstrap-select.min.js' %}"></script>
   <script src="{% static 'js/src/ajax_setup.js' %}"></script>
-  <script src="{% static 'js/src/main.js' %}"></script>
-  <script src="{% static 'js/vendor/ckeditor/ckeditor.js' %}"></script>
-  <script>CKEDITOR.replace( 'rules' );</script>{% if not request.user.is_superuser %}
+  <script src="{% static 'js/src/main.js' %}"></script>{% if not request.user.is_superuser %}
           <!-- Global site tag (gtag.js) - Google Analytics-->
           <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GH7KMYE0E3"></script>
           <script>

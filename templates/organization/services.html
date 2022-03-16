@@ -59,6 +59,12 @@
     <div id="content">
       <div class="container">
         <div class="row">
+          <ul class="breadcrumbs">
+            <li class="first"><a href="#">
+                <div class="fa fa-support"></div></a></li>
+          </ul>
+        </div>
+        <div class="row">
           <div class="col-sm-6 offset-sm-6">
             <div class="organization-box">{{ helper.organization }}</div>
           </div>
@@ -109,7 +115,7 @@
                             <tbody>{% for transfer in transfers %}
                               <tr>
                                 <td>{{ transfer.start_time }}</td>
-                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank">{{ transfer.stopovers_text }}</a></td>
+                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}">{{ transfer.stopovers_text }}</a></td>
                               </tr>{% endfor %}
                             </tbody>
                           </table>
@@ -134,7 +140,7 @@
                             <tbody>{% for transfer in organization_transfers %}
                               <tr>
                                 <td>{{ transfer.start_time }}</td>
-                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank">{{ transfer.stopovers_text }}</a></td>
+                                <td><a href="{% url 'organization:transfer_details' transfer_id=transfer.id %}">{{ transfer.stopovers_text }}</a></td>
                                 <td><a class="delete-confirmation" href="{% url 'organization:edit_transfer' object_id=transfer.id %}" data-confirm="Are you sure you want to edit?">
                                     <div class="fa fa-edit"></div></a></td>
                                 <td><a class="delete-confirmation" href="{% url 'organization:delete_transfer' transfer_id=transfer.id %}" data-confirm="Are you sure you want to delete?">

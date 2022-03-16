@@ -33,6 +33,56 @@ block content
                 hr
                 .row
                     .col-sm-12
+                        h5 Details
+                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
+                            thead
+                                tr
+                                    th Property
+                                    th Value
+                            tbody
+                                tr
+                                    td Food
+                                    td
+                                        | {% if transfer_properties.food %}
+                                        .fa.fa-check-circle
+                                        | {% else %}
+                                        .fa.fa-times-circle
+                                        | {% endif %}
+                                tr
+                                    td Drinks
+                                    td
+                                        | {% if transfer_properties.drinks %}
+                                        .fa.fa-check-circle
+                                        | {% else %}
+                                        .fa.fa-times-circle
+                                        | {% endif %}
+                                tr
+                                    td Blanket
+                                    td
+                                        | {% if transfer_properties.blanket %}
+                                        .fa.fa-check-circle
+                                        | {% else %}
+                                        .fa.fa-times-circle
+                                        | {% endif %}
+                                tr
+                                    td Healthcare
+                                    td
+                                        | {% if transfer_properties.healthcare %}
+                                        .fa.fa-check-circle
+                                        | {% else %}
+                                        .fa.fa-times-circle
+                                        | {% endif %}
+                                tr
+                                    td Translators
+                                    td {{ transfer_properties.translators }}
+                hr
+                .row
+                    .col-sm-12
+                        h5 Rules
+                        | {{ transfer_properties.rules|safe }}
+                hr
+                .row
+                    .col-sm-12
                         h5 Available seats
                         table.table.table-sm.table-bordered(style="color: #6e6e6e;")
                             thead

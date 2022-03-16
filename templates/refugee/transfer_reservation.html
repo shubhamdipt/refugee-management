@@ -101,6 +101,60 @@
             <hr>
             <div class="row">
               <div class="col-sm-12">
+                <h5>Details</h5>
+                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
+                  <thead>
+                    <tr>
+                      <th>Property</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Food</td>
+                      <td>{% if transfer_properties.food %}
+                        <div class="fa fa-check-circle"></div>{% else %}
+                        <div class="fa fa-times-circle"></div>{% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Drinks</td>
+                      <td>{% if transfer_properties.drinks %}
+                        <div class="fa fa-check-circle"></div>{% else %}
+                        <div class="fa fa-times-circle"></div>{% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Blanket</td>
+                      <td>{% if transfer_properties.blanket %}
+                        <div class="fa fa-check-circle"></div>{% else %}
+                        <div class="fa fa-times-circle"></div>{% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Healthcare</td>
+                      <td>{% if transfer_properties.healthcare %}
+                        <div class="fa fa-check-circle"></div>{% else %}
+                        <div class="fa fa-times-circle"></div>{% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Translators</td>
+                      <td>{{ transfer_properties.translators }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12">
+                <h5>Rules</h5>{{ transfer_properties.rules|safe }}
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-12">
                 <h5>Available seats</h5>
                 <table class="table table-sm table-bordered" style="color: #6e6e6e;">
                   <thead>

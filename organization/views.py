@@ -62,7 +62,6 @@ class EditView(View):
     model = None
     template = "organization/edit.html"
     form = None
-    object_type = None
 
     @staticmethod
     def is_valid_organization(obj: Union[Helper, OrganizationPickUpPoint, Transfer], helper: Helper):
@@ -83,7 +82,6 @@ class EditView(View):
             {
                 "form": self.form(instance=obj, helper=helper),
                 "helper": helper,
-                "object_type": self.object_type,
                 "object": obj,
             },
         )
@@ -165,7 +163,7 @@ def edit_transfer_rules(request, helper, rules_id):
             return redirect(reverse("organization:manage_transfer_rules"))
     return render(
         request,
-        "organization/transfer_rules_edit.html",
+        "organization/edit_transfer_rules.html",
         {
             "helper": helper,
             "form": form,

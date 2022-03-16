@@ -2,6 +2,13 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="{% url 'organization:services' %}")
+                        .fa.fa-support
+                li.last.active
+                    a(href='#') Add pick up points
+        .row
             .col-sm-6
                 h2 Pick up points
             .col-sm-6
@@ -48,7 +55,7 @@ block extra_js
                         "<td>" + data.results[i].country + "</td>" +
                         "<td>" + data.results[i].city + "</td>" +
                         "<td>" + data.results[i].address + "</td>" +
-                        "<td><a target='_blank' href='/organization/edit-pick-up-point/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
+                        "<td><a href='/organization/edit-pick-up-point/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
                         "<td><a class='delete-confirmation' href='/organization/delete-pick-up-point/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
                         "<i class='fa fa-times-circle grey'></i></a></td></tr>"
                     );

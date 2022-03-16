@@ -59,6 +59,13 @@
     <div id="content">
       <div class="container">
         <div class="row">
+          <ul class="breadcrumbs">
+            <li class="first"><a href="{% url 'organization:services' %}">
+                <div class="fa fa-support"></div></a></li>
+            <li class="last active"><a href="#">Manage helpers</a></li>
+          </ul>
+        </div>
+        <div class="row">
           <div class="col-sm-6">
             <h2>Helpers</h2>
           </div>
@@ -155,7 +162,7 @@
                     "<td>" + data.results[i].last_name + "</td>" +
                     "<td>" + data.results[i].email + "</td>" +
                     "<td>" + data.results[i].phone + "</td>" +
-                    "<td><a target='_blank' href='/organization/edit-helper/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
+                    "<td><a href='/organization/edit-helper/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
                     "</tr>"
                 );
             }

@@ -2,6 +2,13 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="{% url 'organization:services' %}")
+                        .fa.fa-support
+                li.last.active
+                    a(href='#') Manage transfer rules
+        .row
             .col-sm-6
                 h2 Transfer rules
             .col-sm-6
@@ -29,7 +36,7 @@ block content
                             td(style="width: 220px;") {{ rules.created }}
                             td {{ rules.headline }}
                             td
-                                a.delete-confirmation(href="{% url 'organization:edit_transfer_rules' rules_id=rules.id %}" data-confirm="Are you sure you want to edit?")
+                                a(href="{% url 'organization:edit_transfer_rules' rules_id=rules.id %}")
                                     .fa.fa-edit
                             td
                                 a.delete-confirmation(href="{% url 'organization:delete_transfer_rules' rules_id=rules.id %}" data-confirm="Are you sure you want to delete?")

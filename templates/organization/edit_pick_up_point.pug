@@ -1,0 +1,25 @@
+extends ./../layout.pug
+block content
+    .container
+        .row
+            ul.breadcrumbs
+                li.first
+                    a(href="{% url 'organization:services' %}")
+                        .fa.fa-support
+                li
+                    a(href="{% url 'organization:manage_pick_up_points' %}") Manage pick up points
+                li.last.active
+                    a(href='#') Edit pick up point
+        .row
+            .col-sm-6
+                h3 Edit Pick up point
+            .col-sm-6
+                .organization-box {{ helper.organization }}
+        .row
+
+        .row
+            .col-sm-6
+                form#data-form(method="POST")
+                    | {% csrf_token %}
+                    | {{ form|crispy }}
+                    button.btn.btn-dark.btn-block(type="submit") Submit

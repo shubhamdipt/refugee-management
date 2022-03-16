@@ -2,6 +2,11 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="#")
+                        .fa.fa-support
+        .row
             .col-sm-6.offset-sm-6
                 .organization-box {{ helper.organization }}
         .row
@@ -58,7 +63,7 @@ block content
                                                     tr
                                                         td {{ transfer.start_time }}
                                                         td
-                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank") {{ transfer.stopovers_text }}
+                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}") {{ transfer.stopovers_text }}
                                                     | {% endfor %}
                                 | {% endif %}
                                 | {% if organization_transfers %}
@@ -79,7 +84,7 @@ block content
                                                     tr
                                                         td {{ transfer.start_time }}
                                                         td
-                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}" target="_blank") {{ transfer.stopovers_text }}
+                                                            a(href="{% url 'organization:transfer_details' transfer_id=transfer.id %}") {{ transfer.stopovers_text }}
                                                         td
                                                             a.delete-confirmation(href="{% url 'organization:edit_transfer' object_id=transfer.id %}" data-confirm='Are you sure you want to edit?')
                                                                 .fa.fa-edit

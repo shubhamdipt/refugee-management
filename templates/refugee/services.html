@@ -59,6 +59,12 @@
     <div id="content">
       <div class="container">
         <div class="row">
+          <ul class="breadcrumbs">
+            <li class="first"><a href="#">
+                <div class="fa fa-support"></div></a></li>
+          </ul>
+        </div>
+        <div class="row">
           <div class="col-sm-12">
             <h1>Welcome &nbsp;<span style="font-weight: normal; font-size: 20px; font-style: italic;">{{ request.user.email }} &nbsp;</span><span style="font-weight: bold; font-size: 15px; color:darkgreen;">(REFUGEE)</span></h1>
             <p>Please check your booked services.</p>
@@ -84,7 +90,6 @@
                             <th>Departure time</th>
                             <th>Reserved seats</th>
                             <th>Route</th>
-                            <th>Delete</th>
                           </tr>
                         </thead>
                         <tbody id="transfers-tbody"></tbody>
@@ -155,13 +160,12 @@
                     "<tr>" +
                     "<td>" + data.results[i].departure_time + "</td>" +
                     "<td>" + data.results[i].seats + "</td>" +
-                    "<td><a href='/refugee/transfer-reservation-details/" + data.results[i].id + "' target='_blank'>" + data.results[i].route + "</a></td>" +
-                    "<td><a class='delete-confirmation' href='/refugee/delete-transfer-reservation/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
-                    "<i class='fa fa-times-circle grey'></i></a></td></tr>"
+                    "<td><a href='/refugee/transfer-reservation-details/" + data.results[i].id + "'>" + data.results[i].route + "</a></td>" +
+                    "</tr>"
                 );
             }
             if (html === '') {
-                html = "<tr><td colspan=4>No results found</td></tr>";
+                html = "<tr><td colspan=3>No results found</td></tr>";
             }
             transfers_tbody.append(html);
             transfers_table.show();

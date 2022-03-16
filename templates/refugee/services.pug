@@ -2,6 +2,11 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="#")
+                        .fa.fa-support
+        .row
             .col-sm-12
                 h1
                     | Welcome &nbsp;
@@ -27,7 +32,6 @@ block content
                                                 th Departure time
                                                 th Reserved seats
                                                 th Route
-                                                th Delete
                                         tbody#transfers-tbody
 
 block extra_js
@@ -46,13 +50,12 @@ block extra_js
                         "<tr>" +
                         "<td>" + data.results[i].departure_time + "</td>" +
                         "<td>" + data.results[i].seats + "</td>" +
-                        "<td><a href='/refugee/transfer-reservation-details/" + data.results[i].id + "' target='_blank'>" + data.results[i].route + "</a></td>" +
-                        "<td><a class='delete-confirmation' href='/refugee/delete-transfer-reservation/" + data.results[i].id + "' data-confirm='Are you sure you want to delete?'>" +
-                        "<i class='fa fa-times-circle grey'></i></a></td></tr>"
+                        "<td><a href='/refugee/transfer-reservation-details/" + data.results[i].id + "'>" + data.results[i].route + "</a></td>" +
+                        "</tr>"
                     );
                 }
                 if (html === '') {
-                    html = "<tr><td colspan=4>No results found</td></tr>";
+                    html = "<tr><td colspan=3>No results found</td></tr>";
                 }
                 transfers_tbody.append(html);
                 transfers_table.show();

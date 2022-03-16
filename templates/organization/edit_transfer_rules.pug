@@ -2,6 +2,15 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="{% url 'organization:services' %}")
+                        .fa.fa-support
+                li
+                    a(href="{% url 'organization:manage_transfer_rules' %}") Manage transfer rules
+                li.last.active
+                    a(href='#') Edit transfer rules
+        .row
             .col-sm-6
                 h2 Edit Transfer rules
             .col-sm-6

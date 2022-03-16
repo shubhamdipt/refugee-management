@@ -2,6 +2,13 @@ extends ./../layout.pug
 block content
     .container
         .row
+            ul.breadcrumbs
+                li.first
+                    a(href="{% url 'organization:services' %}")
+                        .fa.fa-support
+                li.last.active
+                    a(href='#') Manage helpers
+        .row
             .col-sm-6
                 h2 Helpers
             .col-sm-6
@@ -49,7 +56,7 @@ block extra_js
                         "<td>" + data.results[i].last_name + "</td>" +
                         "<td>" + data.results[i].email + "</td>" +
                         "<td>" + data.results[i].phone + "</td>" +
-                        "<td><a target='_blank' href='/organization/edit-helper/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
+                        "<td><a href='/organization/edit-helper/" + data.results[i].id + "'><i class='fa fa-edit'></i></a></td>" +
                         "</tr>"
                     );
                 }
