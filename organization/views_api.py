@@ -64,7 +64,7 @@ def get_transfers(request, helper):
 @organization_helper_access()
 def get_transfer_details(request, helper, transfer_id):
     ctx = {}
-    transfer = Transfer.objects.get(id=transfer_id, helper=helper)
+    transfer = Transfer.objects.get(id=transfer_id)
     # Validating proper access to a transfer
     if transfer.helper == helper or (
         helper.account_type == Helper.ADMIN and helper.organization == transfer.organization_route.organization
