@@ -77,101 +77,103 @@
             </form>
           </div>
           <div class="col-sm-6">
-            <div class="row">
-              <div class="col-sm-12">
-                <h5>Route</h5>
-                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>City</th>
-                      <th>Pick up point</th>
-                    </tr>
-                  </thead>
-                  <tbody>{% for time, city, address in route %}
-                    <tr>
-                      <td>{{ time }}</td>
-                      <td>{{ city }}</td>
-                      <td>{{ address }}</td>
-                    </tr>{% endfor %}
-                  </tbody>
-                </table>
+            <div style="color: #6e6e6e;">
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5>Route</h5>
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>City</th>
+                        <th>Pick up point</th>
+                      </tr>
+                    </thead>
+                    <tbody>{% for time, city, address in route %}
+                      <tr>
+                        <td>{{ time }}</td>
+                        <td>{{ city }}</td>
+                        <td>{{ address }}</td>
+                      </tr>{% endfor %}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-12">
-                <h5>Details</h5>
-                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
-                  <thead>
-                    <tr>
-                      <th>Property</th>
-                      <th>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Food</td>
-                      <td>{% if transfer_properties.food %}
-                        <div class="fa fa-check-circle"></div>{% else %}
-                        <div class="fa fa-times-circle"></div>{% endif %}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Drinks</td>
-                      <td>{% if transfer_properties.drinks %}
-                        <div class="fa fa-check-circle"></div>{% else %}
-                        <div class="fa fa-times-circle"></div>{% endif %}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Blanket</td>
-                      <td>{% if transfer_properties.blanket %}
-                        <div class="fa fa-check-circle"></div>{% else %}
-                        <div class="fa fa-times-circle"></div>{% endif %}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Healthcare</td>
-                      <td>{% if transfer_properties.healthcare %}
-                        <div class="fa fa-check-circle"></div>{% else %}
-                        <div class="fa fa-times-circle"></div>{% endif %}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Translators</td>
-                      <td>{{ transfer_properties.translators }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <hr>
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5>Details</h5>
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Food</td>
+                        <td>{% if transfer_properties.food %}
+                          <div class="fa fa-check-circle"></div>{% else %}
+                          <div class="fa fa-times-circle"></div>{% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Drinks</td>
+                        <td>{% if transfer_properties.drinks %}
+                          <div class="fa fa-check-circle"></div>{% else %}
+                          <div class="fa fa-times-circle"></div>{% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Blanket</td>
+                        <td>{% if transfer_properties.blanket %}
+                          <div class="fa fa-check-circle"></div>{% else %}
+                          <div class="fa fa-times-circle"></div>{% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Healthcare</td>
+                        <td>{% if transfer_properties.healthcare %}
+                          <div class="fa fa-check-circle"></div>{% else %}
+                          <div class="fa fa-times-circle"></div>{% endif %}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Translators</td>
+                        <td>{{ transfer_properties.translators }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-12">
-                <h5>Rules</h5>{{ transfer_properties.rules|safe }}
+              <hr>
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5>Rules</h5>{{ transfer_properties.rules|safe }}
+                </div>
               </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-12">
-                <h5>Available seats</h5>
-                <table class="table table-sm table-bordered" style="color: #6e6e6e;">
-                  <thead>
-                    <tr>
-                      <th>From</th>
-                      <th>To</th>
-                      <th>Seats</th>
-                    </tr>
-                  </thead>
-                  <tbody>{% for from_city, to_city, count in seats %}
-                    <tr>
-                      <td>{{ from_city }}</td>
-                      <td>{{ to_city }}</td>
-                      <td>{{ count }}</td>
-                    </tr>{% endfor %}
-                  </tbody>
-                </table>
+              <hr>
+              <div class="row">
+                <div class="col-sm-12">
+                  <h5>Available seats</h5>
+                  <table class="table table-sm table-bordered">
+                    <thead>
+                      <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Seats</th>
+                      </tr>
+                    </thead>
+                    <tbody>{% for from_city, to_city, count in seats %}
+                      <tr>
+                        <td>{{ from_city }}</td>
+                        <td>{{ to_city }}</td>
+                        <td>{{ count }}</td>
+                      </tr>{% endfor %}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

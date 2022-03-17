@@ -149,7 +149,7 @@ LOGGING = {
         "rotate.file.weekly": {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "filename": "server.log",
-            "level": ("CRITICAL", "DEBUG")[DEBUG],
+            "level": ("INFO", "DEBUG")[DEBUG],
             "when": "W0",
             "interval": 1,
             "backupCount": 0,

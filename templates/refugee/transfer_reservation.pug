@@ -14,86 +14,87 @@ block content
                     | {{ form|crispy }}
                     button.btn.btn-dark.btn-block(type="submit") Submit
             .col-sm-6
-                .row
-                    .col-sm-12
-                        h5 Route
-                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
-                            thead
-                                tr
-                                    th Time
-                                    th City
-                                    th Pick up point
-                            tbody
-                                | {% for time, city, address in route %}
-                                tr
-                                    td {{ time }}
-                                    td {{ city }}
-                                    td {{ address }}
-                                | {% endfor %}
-                hr
-                .row
-                    .col-sm-12
-                        h5 Details
-                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
-                            thead
-                                tr
-                                    th Property
-                                    th Value
-                            tbody
-                                tr
-                                    td Food
-                                    td
-                                        | {% if transfer_properties.food %}
-                                        .fa.fa-check-circle
-                                        | {% else %}
-                                        .fa.fa-times-circle
-                                        | {% endif %}
-                                tr
-                                    td Drinks
-                                    td
-                                        | {% if transfer_properties.drinks %}
-                                        .fa.fa-check-circle
-                                        | {% else %}
-                                        .fa.fa-times-circle
-                                        | {% endif %}
-                                tr
-                                    td Blanket
-                                    td
-                                        | {% if transfer_properties.blanket %}
-                                        .fa.fa-check-circle
-                                        | {% else %}
-                                        .fa.fa-times-circle
-                                        | {% endif %}
-                                tr
-                                    td Healthcare
-                                    td
-                                        | {% if transfer_properties.healthcare %}
-                                        .fa.fa-check-circle
-                                        | {% else %}
-                                        .fa.fa-times-circle
-                                        | {% endif %}
-                                tr
-                                    td Translators
-                                    td {{ transfer_properties.translators }}
-                hr
-                .row
-                    .col-sm-12
-                        h5 Rules
-                        | {{ transfer_properties.rules|safe }}
-                hr
-                .row
-                    .col-sm-12
-                        h5 Available seats
-                        table.table.table-sm.table-bordered(style="color: #6e6e6e;")
-                            thead
-                                tr
-                                    th From
-                                    th To
-                                    th Seats
-                            tbody
-                                | {% for from_city, to_city, count in seats %}
-                                tr
-                                    td {{ from_city }}
-                                    td {{ to_city }}
-                                    td {{ count }}
-                                | {% endfor %}
+                div(style="color: #6e6e6e;")
+                    .row
+                        .col-sm-12
+                            h5 Route
+                            table.table.table-sm.table-bordered
+                                thead
+                                    tr
+                                        th Time
+                                        th City
+                                        th Pick up point
+                                tbody
+                                    | {% for time, city, address in route %}
+                                    tr
+                                        td {{ time }}
+                                        td {{ city }}
+                                        td {{ address }}
+                                    | {% endfor %}
+                    hr
+                    .row
+                        .col-sm-12
+                            h5 Details
+                            table.table.table-sm.table-bordered
+                                thead
+                                    tr
+                                        th Property
+                                        th Value
+                                tbody
+                                    tr
+                                        td Food
+                                        td
+                                            | {% if transfer_properties.food %}
+                                            .fa.fa-check-circle
+                                            | {% else %}
+                                            .fa.fa-times-circle
+                                            | {% endif %}
+                                    tr
+                                        td Drinks
+                                        td
+                                            | {% if transfer_properties.drinks %}
+                                            .fa.fa-check-circle
+                                            | {% else %}
+                                            .fa.fa-times-circle
+                                            | {% endif %}
+                                    tr
+                                        td Blanket
+                                        td
+                                            | {% if transfer_properties.blanket %}
+                                            .fa.fa-check-circle
+                                            | {% else %}
+                                            .fa.fa-times-circle
+                                            | {% endif %}
+                                    tr
+                                        td Healthcare
+                                        td
+                                            | {% if transfer_properties.healthcare %}
+                                            .fa.fa-check-circle
+                                            | {% else %}
+                                            .fa.fa-times-circle
+                                            | {% endif %}
+                                    tr
+                                        td Translators
+                                        td {{ transfer_properties.translators }}
+                    hr
+                    .row
+                        .col-sm-12
+                            h5 Rules
+                            | {{ transfer_properties.rules|safe }}
+                    hr
+                    .row
+                        .col-sm-12
+                            h5 Available seats
+                            table.table.table-sm.table-bordered
+                                thead
+                                    tr
+                                        th From
+                                        th To
+                                        th Seats
+                                tbody
+                                    | {% for from_city, to_city, count in seats %}
+                                    tr
+                                        td {{ from_city }}
+                                        td {{ to_city }}
+                                        td {{ count }}
+                                    | {% endfor %}

@@ -98,7 +98,6 @@ class EditView(View):
             ctx["success"] = _("The form has been successfully submitted.")
         ctx["form"] = form
         ctx["helper"] = helper
-        ctx["object_type"] = self.object_type
         ctx["object"] = obj
         return render(request, self.template, ctx)
 
