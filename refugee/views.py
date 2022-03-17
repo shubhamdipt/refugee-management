@@ -1,12 +1,11 @@
 import itertools
 
 from django.shortcuts import redirect, render, reverse
-from django.urls import reverse_lazy
 
 from organization.models import Transfer, TransferRouteDetails
 from organization.seats_management import SeatsManagement
 from refugee.forms import TransferReservationForm
-from refugee.models import TransferReservation
+from refugee.models import Refugee, TransferReservation
 from refugee_management.custom_access import refugee_access
 
 
@@ -15,10 +14,9 @@ def services(request, refugee):
     return render(request, "refugee/services.html", {})
 
 
-@refugee_access(redirect_url=reverse_lazy("accounts:login"))
-def reserve_transfer(request, refugee, transfer_id):
+def reserve_transfer(request, transfer_id):
     transfer = Transfer.objects.get(id=transfer_id)
-
+    refugee = None
     # Creating seat availabilities
     availabilities = []
     seats_management = SeatsManagement(transfer=transfer)
@@ -31,6 +29,12 @@ def reserve_transfer(request, refugee, transfer_id):
 
     form = TransferReservationForm(transfer=transfer, refugee=refugee)
     if request.method == "POST":
+        # Validate user
+        if request.user.is_authenticated:
+            refugee = Refugee.objects.filter(account_user=request.user).first()
+        if not refugee:
+            return redirect(reverse("accounts:login"))
+        
         form = TransferReservationForm(transfer=transfer, refugee=refugee, data=request.POST)
         if form.is_valid():
             from_city = TransferRouteDetails.objects.get(city_id=form.cleaned_data["from_city"], transfer=transfer)

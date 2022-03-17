@@ -48,6 +48,9 @@ class TransferReservationForm(forms.Form):
         if seats_available < seats:
             raise ValidationError(f"Only {seats_available} left for this trip.")
 
+        if not self.refugee:
+            raise ValidationError(_("Missing refugee account."))
+
         if (
             TransferReservation.objects.filter(refugee=self.refugee, transfer__start_time__gt=timezone.now()).count()
             > 0
